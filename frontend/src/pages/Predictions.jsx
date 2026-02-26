@@ -71,9 +71,8 @@ export default function Predictions() {
       <div className="fade-in">
         <div className="page-header">
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <h1><BrainCircuit size={28} style={{ color: '#3b82f6' }} /> Advanced AI Predictions</h1>
+            <h1><BrainCircuit size={28} style={{ color: '#3b82f6' }} /> Advanced Predictions</h1>
           </div>
-          <p>Powered by LightGBM, XGBoost, Stacking Ensembles, and Reinforcement Learning</p>
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20, marginTop: 24 }}>
@@ -111,7 +110,7 @@ export default function Predictions() {
       <div className="page-header" style={{ marginBottom: 20 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <button onClick={() => setSelectedCity(null)} style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(0,0,0,0.1)', borderRadius: 8, padding: '6px 14px', color: '#94a3b8', cursor: 'pointer', fontSize: 13 }}>← Change City</button>
-          <h1 style={{ margin: 0 }}>{CITY_LABELS[selectedCity]} Predictions</h1>
+          <h1 style={{ margin: 0 }}>{CITY_LABELS[selectedCity]} Advanced Predictions</h1>
         </div>
         <div style={{ display: 'flex', gap: 16, marginTop: 12 }}>
           <span className="badge" style={{ background: 'rgba(59,130,246,0.1)', color: '#60a5fa' }}><Cpu size={14} style={{ marginRight: 4 }} /> {data.pipeline.primary_model} + {data.pipeline.secondary_model}</span>

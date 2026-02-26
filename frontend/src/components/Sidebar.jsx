@@ -4,10 +4,12 @@ import {
   Target, Star, Coins, Wallet, HeartPulse, FileText, Bell
 } from 'lucide-react';
 
+import logoImg from '../assets/logo.png';
+
 const navItems = [
   { to: '/', icon: <LayoutDashboard size={18} />, label: 'Dashboard' },
   { to: '/digital-twin', icon: <Globe size={18} />, label: 'Digital Twin' },
-  { to: '/predictions', icon: <BrainCircuit size={18} />, label: 'AI Predictions' },
+  { to: '/predictions', icon: <BrainCircuit size={18} />, label: 'Advanced Predictions' },
   { to: '/simulation', icon: <FlaskConical size={18} />, label: 'Simulation' },
   { section: 'Intelligence' },
   { to: '/optimize', icon: <Cpu size={18} />, label: 'RL Optimizer' },
@@ -25,7 +27,9 @@ export default function Sidebar() {
   return (
     <aside className="sidebar">
       <div className="sidebar-logo">
-        <div className="logo-icon">🌱</div>
+        <div className="logo-icon" style={{ background: 'transparent', padding: 0 }}>
+          <img src={logoImg} alt="UrbanEcoTwin" style={{ width: 48, height: 48, objectFit: 'cover', borderRadius: '50%' }} />
+        </div>
         <div>
           <div className="logo-text">UrbanEcoTwin</div>
           <div className="logo-sub">Net-Zero Platform</div>
