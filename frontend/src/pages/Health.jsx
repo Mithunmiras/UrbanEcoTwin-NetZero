@@ -4,13 +4,13 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Cell
 } from 'recharts';
-import { HeartPulse } from 'lucide-react';
+import { HeartPulse, Globe2, Landmark, Waves, Building2 } from 'lucide-react';
 
 const CITY_OPTIONS = [
-  { id: '', label: '🌍 All Cities' },
-  { id: 'chennai', label: '🏛️ Chennai' },
-  { id: 'mumbai', label: '🌊 Mumbai' },
-  { id: 'delhi', label: '🏙️ Delhi' },
+  { id: '', label: 'All Cities', icon: Globe2 },
+  { id: 'chennai', label: 'Chennai', icon: Landmark },
+  { id: 'mumbai', label: 'Mumbai', icon: Waves },
+  { id: 'delhi', label: 'Delhi', icon: Building2 },
 ];
 
 export default function Health() {
@@ -45,17 +45,24 @@ export default function Health() {
 
       {/* City filter */}
       <div style={{ display: 'flex', gap: 8, marginBottom: 20, flexWrap: 'wrap' }}>
-        {CITY_OPTIONS.map(opt => (
-          <button key={opt.id} onClick={() => { setSelectedCity(opt.id); setSelectedZone(null); }}
-            style={{
-              padding: '6px 16px', borderRadius: 8, fontSize: 13, cursor: 'pointer',
-              border: selectedCity === opt.id ? '1px solid #3b82f6' : '1px solid rgba(0,0,0,0.08)',
-              background: selectedCity === opt.id ? 'rgba(59,130,246,0.15)' : 'rgba(0,0,0,0.04)',
-              color: selectedCity === opt.id ? '#60a5fa' : '#94a3b8',
-              fontWeight: selectedCity === opt.id ? 600 : 400,
-            }}
-          >{opt.label}</button>
-        ))}
+        {CITY_OPTIONS.map(opt => {
+          const Icon = opt.icon;
+          return (
+            <button key={opt.id} onClick={() => { setSelectedCity(opt.id); setSelectedZone(null); }}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 6,
+                padding: '6px 16px', borderRadius: 8, fontSize: 13, cursor: 'pointer',
+                border: selectedCity === opt.id ? '1px solid #3b82f6' : '1px solid rgba(0,0,0,0.08)',
+                background: selectedCity === opt.id ? 'rgba(59,130,246,0.15)' : 'rgba(0,0,0,0.04)',
+                color: selectedCity === opt.id ? '#60a5fa' : '#94a3b8',
+                fontWeight: selectedCity === opt.id ? 600 : 400,
+              }}
+            >
+              <Icon size={16} />
+              {opt.label}
+            </button>
+          );
+        })}
       </div>
 
       {/* Summary cards */}

@@ -17,6 +17,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
 
   const [selectedRiskCategory, setSelectedRiskCategory] = useState(null);
+  const [selectedCityScore, setSelectedCityScore] = useState('All');
 
   useEffect(() => {
     Promise.all([
@@ -41,7 +42,22 @@ export default function Dashboard() {
   const cityScore = scores?.city_average_score || 0;
 
   const co2Data = zones.zones.map(z => ({ name: z.name, co2: z.current_co2_ppm, aqi: z.current_aqi }));
-  const scoreData = scores?.zone_scores?.map(z => ({ name: z.zone_name, score: z.sustainability_score })) || [];
+
+  const scoreData = scores?.zone_scores?.map(z => {
+    // The zone_id is typically formatted as "city_zonename" (e.g., "chennai_adyar")
+    const cityId = z.zone_id ? z.zone_id.split('_')[0] : 'unknown';
+    return {
+      name: z.zone_name,
+      score: z.sustainability_score,
+      city: cityId
+    };
+  }) || [];
+
+  const availableCities = [...new Set(scoreData.map(z => z.city).filter(c => c !== 'unknown'))];
+
+  const filteredScoreData = selectedCityScore === 'All'
+    ? scoreData
+    : scoreData.filter(entry => entry.city === selectedCityScore);
   const riskData = [
     { name: 'Critical', value: zones.zones.filter(z => z.risk_level === 'Critical').length },
     { name: 'High', value: zones.zones.filter(z => z.risk_level === 'High').length },
@@ -251,9 +267,39 @@ export default function Dashboard() {
 
       {/* Sustainability Scores Bar Chart */}
       <div className="card chart-card" style={{ marginBottom: 24 }}>
-        <h3 className="text-heading">Sustainability Scores by Zone</h3>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+          <h3 className="text-heading" style={{ margin: 0 }}>Sustainability Scores by Zone</h3>
+
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+            <button
+              onClick={() => setSelectedCityScore('All')}
+              style={{
+                padding: '4px 12px', borderRadius: 6, fontSize: 12, cursor: 'pointer',
+                border: selectedCityScore === 'All' ? '1px solid #3b82f6' : '1px solid rgba(0,0,0,0.08)',
+                background: selectedCityScore === 'All' ? 'rgba(59,130,246,0.1)' : 'transparent',
+                color: selectedCityScore === 'All' ? '#3b82f6' : 'var(--text-muted)'
+              }}
+            >
+              All Cities
+            </button>
+            {availableCities.map(city => (
+              <button
+                key={city}
+                onClick={() => setSelectedCityScore(city)}
+                style={{
+                  padding: '4px 12px', borderRadius: 6, fontSize: 12, cursor: 'pointer', textTransform: 'capitalize',
+                  border: selectedCityScore === city ? '1px solid #3b82f6' : '1px solid rgba(0,0,0,0.08)',
+                  background: selectedCityScore === city ? 'rgba(59,130,246,0.1)' : 'transparent',
+                  color: selectedCityScore === city ? '#3b82f6' : 'var(--text-muted)'
+                }}
+              >
+                {city}
+              </button>
+            ))}
+          </div>
+        </div>
         <ResponsiveContainer width="100%" height={250}>
-          <BarChart data={scoreData}>
+          <BarChart data={filteredScoreData}>
             <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.05)" />
             <XAxis dataKey="name" stroke="#64748b" fontSize={12} />
             <YAxis stroke="#64748b" fontSize={12} domain={[0, 100]} />
