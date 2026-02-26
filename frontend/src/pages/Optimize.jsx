@@ -33,6 +33,7 @@ export default function Optimize() {
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <h1><BrainCircuit size={28} style={{ color: '#3b82f6' }} /> Reinforcement Learning Optimizer</h1>
           </div>
+          <p>select the city to get strategies:</p>
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20, marginTop: 24 }}>

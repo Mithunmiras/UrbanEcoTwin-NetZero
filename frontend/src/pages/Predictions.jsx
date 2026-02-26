@@ -75,7 +75,7 @@ export default function Predictions() {
   }
 
   // ── Step 2: Zone Selection & Details Layout ─────────────────────
-  if (loading) return <div className="loading"><div className="loading-spinner"></div><p>Loading advanced ML predictions for {CITY_LABELS[selectedCity]}...</p></div>;
+  if (loading) return <div className="loading"><div className="loading-spinner"></div><p>Loading predictions...</p></div>;
   if (!data || predictions.length === 0) return <div className="loading"><p>No prediction data available.</p></div>;
 
   return (
@@ -85,11 +85,6 @@ export default function Predictions() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <button onClick={() => setSelectedCity(null)} style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(0,0,0,0.1)', borderRadius: 8, padding: '6px 14px', color: '#94a3b8', cursor: 'pointer', fontSize: 13 }}>← Change City</button>
           <h1 style={{ margin: 0 }}>{CITY_LABELS[selectedCity]} Advanced Predictions</h1>
-        </div>
-        <div style={{ display: 'flex', gap: 16, marginTop: 12 }}>
-          <span className="badge" style={{ background: 'rgba(59,130,246,0.1)', color: '#60a5fa' }}><Cpu size={14} style={{ marginRight: 4 }} /> {data.pipeline.primary_model} + {data.pipeline.secondary_model}</span>
-          <span className="badge" style={{ background: 'rgba(168,85,247,0.1)', color: '#c084fc' }}><GitMerge size={14} style={{ marginRight: 4 }} /> {data.pipeline.meta_learner}</span>
-          <span className="badge" style={{ background: 'rgba(34,197,94,0.1)', color: '#4ade80' }}><Activity size={14} style={{ marginRight: 4 }} /> {data.pipeline.optimization_layer}</span>
         </div>
       </div>
 
