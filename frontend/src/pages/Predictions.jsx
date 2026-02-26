@@ -4,9 +4,36 @@ import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, Legend, BarChart, Bar, Cell
 } from 'recharts';
-import { BrainCircuit, Cpu, GitMerge, Activity, Search } from 'lucide-react';
+import { BrainCircuit, Cpu, GitMerge, Activity, Search, Globe2, Landmark, Building2 } from 'lucide-react';
 
-const CITY_LABELS = { chennai: '🏛️ Chennai', mumbai: '🌊 Mumbai', delhi: '🏙️ Delhi' };
+const GatewayOfIndiaIcon = ({ size = 24, color = "currentColor", ...props }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 100 100"
+    fill={color}
+    {...props}
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <rect x="8" y="85" width="84" height="10" />
+    <rect x="12" y="55" width="76" height="5" />
+    <path fillRule="evenodd" clipRule="evenodd" d="M12 60 H35 V85 H12 Z M18 85 H29 V72 Q23.5 56 18 72 Z" />
+    <path fillRule="evenodd" clipRule="evenodd" d="M65 60 H88 V85 H65 Z M71 85 H82 V72 Q76.5 56 71 72 Z" />
+    <path fillRule="evenodd" clipRule="evenodd" d="M35 48 H65 V85 H35 Z M42 85 H58 V70 Q50 50 42 70 Z" />
+    <rect x="35" y="25" width="10" height="23" />
+    <rect x="55" y="25" width="10" height="23" />
+    <rect x="45" y="32" width="10" height="10" />
+    <path d="M 35 25 Q 40 10 45 25 Z" />
+    <path d="M 55 25 Q 60 10 65 25 Z" />
+    <circle cx="40" cy="11" r="2.5" />
+    <circle cx="60" cy="11" r="2.5" />
+    <polygon points="5,50 35,50 35,55 12,55" />
+    <polygon points="65,50 95,50 88,55 65,55" />
+  </svg>
+);
+
+const CITY_LABELS = { chennai: 'Chennai', mumbai: 'Mumbai', delhi: 'Delhi' };
+const CITY_ICONS = { chennai: Landmark, mumbai: GatewayOfIndiaIcon, delhi: Building2 };
 
 export default function Predictions() {
   const [selectedCity, setSelectedCity] = useState(null);
@@ -50,22 +77,25 @@ export default function Predictions() {
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20, marginTop: 24 }}>
-          {cities.map(city => (
-            <div
-              key={city.id}
-              className="card"
-              onClick={() => setSelectedCity(city.id)}
-              style={{ cursor: 'pointer', textAlign: 'center', padding: '40px 24px', transition: 'all 0.3s ease', border: '1px solid rgba(255,255,255,0.06)' }}
-              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.borderColor = '#3b82f6'; }}
-              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)'; }}
-            >
-              <div style={{ fontSize: 48, marginBottom: 16 }}>
-                {city.id === 'chennai' ? '🏛️' : city.id === 'mumbai' ? '🌊' : '🏙️'}
+          {cities.map(city => {
+            const IconComponent = CITY_ICONS[city.id] || Globe2;
+            return (
+              <div
+                key={city.id}
+                className="card"
+                onClick={() => setSelectedCity(city.id)}
+                style={{ cursor: 'pointer', textAlign: 'center', padding: '40px 24px', transition: 'all 0.3s ease', border: '1px solid rgba(255,255,255,0.06)' }}
+                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.borderColor = '#3b82f6'; }}
+                onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)'; }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
+                  <IconComponent size={48} color="#94a3b8" />
+                </div>
+                <h2 style={{ fontSize: 24, fontWeight: 700, marginBottom: 8 }}>{city.name}</h2>
+                <p style={{ color: 'var(--text-muted)', fontSize: 14 }}>View AI predictions for {city.name} zones</p>
               </div>
-              <h2 style={{ fontSize: 24, fontWeight: 700, marginBottom: 8 }}>{city.name}</h2>
-              <p style={{ color: 'var(--text-muted)', fontSize: 14 }}>View AI predictions for {city.name} zones</p>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     );
@@ -120,16 +150,16 @@ export default function Predictions() {
                     padding: '12px 16px',
                     borderRadius: '8px',
                     borderLeft: `4px solid ${p.risk_trend === 'increasing' ? '#f97316' : '#22c55e'}`,
-                    background: isSelected ? 'rgba(59,130,246,0.1)' : 'rgba(255,255,255,0.03)',
+                    background: isSelected ? 'rgba(59,130,246,0.1)' : 'rgba(0,0,0,0.02)',
                     border: isSelected ? '1px solid rgba(59,130,246,0.3)' : '1px solid transparent',
                     borderLeftColor: p.risk_trend === 'increasing' ? '#f97316' : '#22c55e',
                     transition: 'all 0.2s ease'
                   }}
-                  onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; }}
-                  onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = 'rgba(255,255,255,0.03)'; }}
+                  onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = 'rgba(0,0,0,0.05)'; }}
+                  onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = 'rgba(0,0,0,0.02)'; }}
                 >
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-                    <h4 style={{ fontSize: 14, fontWeight: isSelected ? 700 : 500, margin: 0, color: isSelected ? '#fff' : '#e2e8f0' }}>{p.zone_name}</h4>
+                    <h4 style={{ fontSize: 14, fontWeight: isSelected ? 700 : 500, margin: 0, color: isSelected ? '#0f172a' : 'var(--text-primary)' }}>{p.zone_name}</h4>
                     <span style={{ fontSize: 10, padding: '2px 6px', borderRadius: '4px', background: p.risk_trend === 'increasing' ? 'rgba(249,115,22,0.15)' : 'rgba(34,197,94,0.15)', color: p.risk_trend === 'increasing' ? '#f97316' : '#22c55e', whiteSpace: 'nowrap' }}>
                       {p.risk_trend === 'increasing' ? 'Rising ↗' : 'Declining ↘'}
                     </span>
@@ -151,7 +181,6 @@ export default function Predictions() {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
                 <div>
                   <h2 style={{ fontSize: 28, fontWeight: 800, margin: '0 0 4px 0' }}>{current.zone_name}</h2>
-                  <p style={{ margin: 0, color: 'var(--text-muted)' }}>Advanced AI Forecast & Spatial Analysis</p>
                 </div>
                 <div style={{ textAlign: 'right', background: 'rgba(255,255,255,0.03)', padding: '12px 16px', borderRadius: '8px', border: '1px solid rgba(0,0,0,0.05)' }}>
                   <div style={{ fontSize: 11, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: 4 }}>Spatial Lag (Neighbor Bleed)</div>
@@ -190,9 +219,6 @@ export default function Predictions() {
                   <h3 style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <Activity size={18} color="#3b82f6" /> 24-Hour CO₂ Forecast: Raw ML vs RL Policy
                   </h3>
-                  <p style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 20 }}>
-                    Comparing the base Stacking Ensemble (LightGBM+XGBoost) against the Deep Q-Network active intervention policy.
-                  </p>
                   <ResponsiveContainer width="100%" height={300}>
                     <AreaChart data={current.hourly_forecast} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                       <defs>

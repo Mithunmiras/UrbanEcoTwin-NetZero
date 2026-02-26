@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import { api } from '../api/client';
 import CesiumCityView from '../components/CesiumCityView';
+import { Globe2, Building2, Waves, Landmark } from 'lucide-react';
 
 const CITY_OPTIONS = [
-  { id: '', label: '🌍 All Cities' },
-  { id: 'chennai', label: '🏛️ Chennai' },
-  { id: 'mumbai', label: '🌊 Mumbai' },
-  { id: 'delhi', label: '🏙️ Delhi' },
+  { id: '', label: 'All Cities', icon: Globe2 },
+  { id: 'chennai', label: 'Chennai', icon: Landmark },
+  { id: 'mumbai', label: 'Mumbai', icon: Waves },
+  { id: 'delhi', label: 'Delhi', icon: Building2 },
 ];
 
 export default function DigitalTwin() {
@@ -37,32 +38,39 @@ export default function DigitalTwin() {
     <div className="fade-in">
       <div className="page-header">
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-          <h1>🌍 Urban Digital Twin</h1>
+          <h1>Urban Digital Twin</h1>
           <span className="live-badge live">
             <span className="live-dot"></span>
             Live Data
           </span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 8, flexWrap: 'wrap' }}>
-          {CITY_OPTIONS.map(opt => (
-            <button
-              key={opt.id}
-              onClick={() => { setSelectedCity(opt.id); setSelectedZoneId(null); }}
-              style={{
-                padding: '6px 16px',
-                borderRadius: 8,
-                border: selectedCity === opt.id ? '1px solid #3b82f6' : '1px solid rgba(0,0,0,0.08)',
-                background: selectedCity === opt.id ? 'rgba(59,130,246,0.15)' : 'rgba(0,0,0,0.04)',
-                color: selectedCity === opt.id ? '#60a5fa' : '#94a3b8',
-                cursor: 'pointer',
-                fontSize: 13,
-                fontWeight: selectedCity === opt.id ? 600 : 400,
-                transition: 'all 0.2s ease',
-              }}
-            >
-              {opt.label}
-            </button>
-          ))}
+          {CITY_OPTIONS.map(opt => {
+            const Icon = opt.icon;
+            return (
+              <button
+                key={opt.id}
+                onClick={() => { setSelectedCity(opt.id); setSelectedZoneId(null); }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '6px 16px',
+                  borderRadius: 8,
+                  border: selectedCity === opt.id ? '1px solid #3b82f6' : '1px solid rgba(0,0,0,0.08)',
+                  background: selectedCity === opt.id ? 'rgba(59,130,246,0.15)' : 'rgba(0,0,0,0.04)',
+                  color: selectedCity === opt.id ? '#60a5fa' : '#94a3b8',
+                  cursor: 'pointer',
+                  fontSize: 13,
+                  fontWeight: selectedCity === opt.id ? 600 : 400,
+                  transition: 'all 0.2s ease',
+                }}
+              >
+                <Icon size={16} />
+                {opt.label}
+              </button>
+            );
+          })}
           <span style={{ color: 'var(--text-muted)', fontSize: 13, marginLeft: 8 }}>
             {data.total_zones} zones monitored
           </span>

@@ -5,6 +5,7 @@ import {
   AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, PieChart, Pie, Cell
 } from 'recharts';
+import { Leaf, Wind, Activity, CircleDollarSign, Globe, AlertTriangle } from 'lucide-react';
 
 const COLORS = ['#22c55e', '#3b82f6', '#f97316', '#a855f7', '#eab308'];
 
@@ -115,7 +116,6 @@ export default function Dashboard() {
             Live Data
           </span>
         </div>
-        <p>Real-time sustainability intelligence for Chennai Metropolitan Area</p>
       </div>
 
       {/* Metric Cards */}
@@ -123,7 +123,7 @@ export default function Dashboard() {
         <div className="card metric-card green">
           <div className="metric-header">
             <div><div className="metric-label">City Avg CO₂</div></div>
-            <div className="metric-icon">🌿</div>
+            <div className="metric-icon"><Leaf size={22} color="var(--accent-green)" /></div>
           </div>
           <div className="metric-value">{avgCO2}</div>
           <div className="metric-change up">ppm — {avgCO2 > 420 ? 'Above' : 'Near'} safe threshold</div>
@@ -132,16 +132,20 @@ export default function Dashboard() {
         <div className="card metric-card blue">
           <div className="metric-header">
             <div><div className="metric-label">Avg Air Quality Index</div></div>
-            <div className="metric-icon">💨</div>
+            <div className="metric-icon"><Wind size={22} color="var(--accent-blue)" /></div>
           </div>
           <div className="metric-value">{avgAQI}</div>
-          <div className="metric-change">{avgAQI > 100 ? '⚠️ Unhealthy' : '✅ Moderate'}</div>
+          <div className="metric-change">
+            <span style={{ color: avgAQI > 100 ? 'var(--accent-red)' : 'var(--accent-green)' }}>
+              {avgAQI > 100 ? 'Unhealthy' : 'Moderate'}
+            </span>
+          </div>
         </div>
 
         <div className="card metric-card orange">
           <div className="metric-header">
             <div><div className="metric-label">Sustainability Score</div></div>
-            <div className="metric-icon">⭐</div>
+            <div className="metric-icon"><Activity size={22} color="var(--accent-orange)" /></div>
           </div>
           <div className="metric-value">{cityScore}<span style={{ fontSize: '16px', opacity: 0.5 }}>/100</span></div>
           <div className="metric-change">Grade: {scores?.city_grade}</div>
@@ -150,7 +154,7 @@ export default function Dashboard() {
         <div className="card metric-card purple">
           <div className="metric-header">
             <div><div className="metric-label">Carbon Credits</div></div>
-            <div className="metric-icon">💰</div>
+            <div className="metric-icon"><CircleDollarSign size={22} color="var(--accent-purple)" /></div>
           </div>
           <div className="metric-value" style={{ fontSize: '24px' }}>{credits?.city_totals?.total_credits_inr}</div>
           <div className="metric-change down">Potential earnings</div>
@@ -233,12 +237,13 @@ export default function Dashboard() {
 
       {/* 3D Digital Twin Preview */}
       <Link to="/digital-twin" style={{ textDecoration: 'none' }}>
-        <div className="card" style={{ marginBottom: 24, cursor: 'pointer', border: '1px solid rgba(59.130,246,.15)', transition: 'all 0.4s ease' }}>
+        <div className="card" style={{ marginBottom: 24, cursor: 'pointer', border: '1px solid rgba(59,130,246,0.15)', transition: 'all 0.4s ease' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-            <div style={{ fontSize: 40 }}>🌍</div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 48, height: 48, borderRadius: 12, background: 'rgba(2, 132, 199, 0.1)' }}>
+              <Globe size={28} color="var(--accent-blue)" />
+            </div>
             <div>
-              <h3 className="text-gradient" style={{ marginBottom: 4, fontSize: 20 }}>Interactive 3D Digital Twin</h3>
-              <p style={{ color: 'var(--text-muted)', fontSize: 14, margin: 0 }}>Explore the immersive Three.js spatial view with live climate modeling →</p>
+              <h3 className="text-gradient" style={{ marginBottom: 0, fontSize: 20 }}>Interactive 3D Digital Twin</h3>
             </div>
           </div>
         </div>
@@ -266,7 +271,10 @@ export default function Dashboard() {
       {alerts && alerts.alerts.length > 0 && (
         <div className="card" style={{ marginBottom: 24 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-            <h3 style={{ margin: 0 }}>🚨 Active Alerts ({alerts.total_alerts})</h3>
+            <h3 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
+              <AlertTriangle size={20} color="var(--accent-red)" />
+              Active Alerts ({alerts.total_alerts})
+            </h3>
             {alerts.total_alerts > 5 && (
               <Link to="/alerts" style={{ background: '#3b82f6', color: '#0f172a', padding: '6px 12px', borderRadius: '6px', textDecoration: 'none', fontSize: 13, fontWeight: 500, transition: 'background 0.2s' }}>
                 View All {alerts.total_alerts} Alerts →

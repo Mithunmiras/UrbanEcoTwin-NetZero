@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { api } from '../api/client';
 import { RadarChart, PolarGrid, PolarAngleAxis, Radar, ResponsiveContainer, Tooltip } from 'recharts';
+import { Star } from 'lucide-react';
 
 export default function Scores() {
   const [data, setData] = useState(null);
@@ -18,8 +19,9 @@ export default function Scores() {
   return (
     <div className="fade-in">
       <div className="page-header">
-        <h1>⭐ Sustainability Scores</h1>
-        <p>Multi-factor sustainability assessment — City Grade: <span style={{ color: gradeColors[data.city_grade], fontWeight: 700 }}>{data.city_grade}</span></p>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <h1><Star size={28} style={{ color: '#eab308' }} /> Sustainability Scores</h1>
+        </div>
       </div>
 
       <div className="card" style={{ marginBottom: 24, textAlign: 'center', padding: 32 }}>

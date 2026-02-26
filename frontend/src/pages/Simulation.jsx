@@ -4,6 +4,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   Cell, LineChart, Line, Legend
 } from 'recharts';
+import { TreePine, Sun, Car, Leaf, TrafficCone, Factory, Microscope } from 'lucide-react';
 
 export default function Simulation() {
   const [zones, setZones] = useState(null);
@@ -36,22 +37,21 @@ export default function Simulation() {
   if (loading) return <div className="loading"><div className="loading-spinner"></div><p>Loading simulator...</p></div>;
 
   const sliderConfig = [
-    { key: 'plant_trees', label: '🌳 Plant Trees', max: 20000, step: 500, unit: 'trees' },
-    { key: 'add_solar_panels', label: '☀️ Add Solar Panels', max: 5000, step: 100, unit: 'panels' },
-    { key: 'ev_transition', label: '🚗 EV Transition', max: 10000, step: 200, unit: 'vehicles' },
-    { key: 'green_cover', label: '🌿 Green Cover Increase', max: 30, step: 1, unit: '%' },
-    { key: 'increase_traffic', label: '🚦 Increase Traffic', max: 20000, step: 500, unit: 'vehicles' },
-    { key: 'add_factory', label: '🏭 Add Factories', max: 10, step: 1, unit: 'factories' },
+    { key: 'plant_trees', label: 'Plant Trees', icon: TreePine, max: 20000, step: 500, unit: 'trees' },
+    { key: 'add_solar_panels', label: 'Add Solar Panels', icon: Sun, max: 5000, step: 100, unit: 'panels' },
+    { key: 'ev_transition', label: 'EV Transition', icon: Car, max: 10000, step: 200, unit: 'vehicles' },
+    { key: 'green_cover', label: 'Green Cover Increase', icon: Leaf, max: 30, step: 1, unit: '%' },
+    { key: 'increase_traffic', label: 'Increase Traffic', icon: TrafficCone, max: 20000, step: 500, unit: 'vehicles' },
+    { key: 'add_factory', label: 'Add Factories', icon: Factory, max: 10, step: 1, unit: 'factories' },
   ];
 
   return (
     <div className="fade-in">
       <div className="page-header">
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <h1>🔬 ML Scenario Simulation</h1>
+          <h1><Microscope size={28} style={{ color: '#3b82f6', marginBottom: -4 }} /> ML Scenario Simulation</h1>
           <span className="live-badge live"><span className="live-dot"></span>Live Data</span>
         </div>
-        <p>ML-powered impact prediction — actions adjusted by live environmental conditions</p>
       </div>
 
       <div className="card-grid-3">
@@ -62,27 +62,36 @@ export default function Simulation() {
             <label style={{ fontSize: 13, color: 'var(--text-muted)', display: 'block', marginBottom: 6 }}>Select Zone</label>
             <select value={selectedZone} onChange={e => { setSelectedZone(e.target.value); setResult(null); }} style={{ width: '100%' }}>
               {zones?.zones.map(z => (
-                <option key={z.id} value={z.id}>{z.name} ({z.city})</option>
+                <option key={z.id} value={z.id}>{z.name} {z.city}</option>
               ))}
             </select>
           </div>
 
-          {sliderConfig.map(s => (
-            <div className="control-group" key={s.key}>
-              <div className="control-label">
-                <span>{s.label}</span>
-                <span className="control-value">{actions[s.key].toLocaleString()} {s.unit}</span>
+          {sliderConfig.map(s => {
+            const IconComponent = s.icon;
+            const percentage = (actions[s.key] / s.max) * 100;
+            return (
+              <div className="control-group" key={s.key}>
+                <div className="control-label">
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <IconComponent size={16} color="var(--accent-green)" /> {s.label}
+                  </span>
+                  <span className="control-value">{actions[s.key].toLocaleString()} {s.unit}</span>
+                </div>
+                <input
+                  type="range"
+                  min={0}
+                  max={s.max}
+                  step={s.step}
+                  value={actions[s.key]}
+                  onChange={e => setActions(prev => ({ ...prev, [s.key]: Number(e.target.value) }))}
+                  style={{
+                    background: `linear-gradient(to right, var(--accent-green) ${percentage}%, rgba(0,0,0,0.08) ${percentage}%)`
+                  }}
+                />
               </div>
-              <input
-                type="range"
-                min={0}
-                max={s.max}
-                step={s.step}
-                value={actions[s.key]}
-                onChange={e => setActions(prev => ({ ...prev, [s.key]: Number(e.target.value) }))}
-              />
-            </div>
-          ))}
+            );
+          })}
 
           <button
             onClick={runSimulation}
@@ -104,24 +113,14 @@ export default function Simulation() {
           <h3 style={{ marginBottom: 20 }}>Simulation Results</h3>
           {!result ? (
             <div style={{ textAlign: 'center', padding: 60, color: 'var(--text-muted)' }}>
-              <div style={{ fontSize: 48, marginBottom: 16 }}>🔬</div>
+              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
+                <Microscope size={48} color="#cbd5e1" />
+              </div>
               <p>Configure actions and click "Run Simulation" to see ML-predicted results</p>
               <p style={{ fontSize: 12, marginTop: 8 }}>Impact will be adjusted based on live temperature, humidity, AQI, and pollutants</p>
             </div>
           ) : (
             <>
-              {/* Model & Environment Info */}
-              <div style={{
-                padding: '10px 14px', borderRadius: 8, marginBottom: 16,
-                background: 'rgba(59,130,246,0.06)', border: '1px solid rgba(59,130,246,0.15)',
-                fontSize: 12, color: '#94a3b8',
-              }}>
-                <strong style={{ color: '#60a5fa' }}>🧠 Model:</strong> {result.model_info?.name} •
-                <strong style={{ color: '#60a5fa' }}> Data:</strong> {result.env_conditions?.api_source} •
-                <strong style={{ color: '#60a5fa' }}> Conditions:</strong> {result.env_conditions?.temperature_c?.toFixed(1)}°C,
-                {' '}{result.env_conditions?.humidity_pct}% humidity,
-                AQI {result.env_conditions?.current_aqi}
-              </div>
 
               {/* Metric cards */}
               <div className="card-grid">

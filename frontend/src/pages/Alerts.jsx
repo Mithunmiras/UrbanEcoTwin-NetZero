@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { api } from '../api/client';
+import { BellRing } from 'lucide-react';
 
 export default function Alerts() {
   const [data, setData] = useState(null);
@@ -15,8 +16,9 @@ export default function Alerts() {
   return (
     <div className="fade-in">
       <div className="page-header">
-        <h1>🚨 Sustainability Alerts</h1>
-        <p>{data.total_alerts} active alerts — {data.critical_count} critical, {data.warning_count} warnings, {data.info_count} info</p>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <h1><BellRing size={28} style={{ color: '#ef4444' }} /> Sustainability Alerts</h1>
+        </div>
       </div>
 
       <div className="card-grid">

@@ -4,6 +4,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Cell
 } from 'recharts';
+import { HeartPulse } from 'lucide-react';
 
 const CITY_OPTIONS = [
   { id: '', label: '🌍 All Cities' },
@@ -37,10 +38,9 @@ export default function Health() {
     <div className="fade-in">
       <div className="page-header">
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <h1>❤️ ML Health Impact Predictor</h1>
+          <h1><HeartPulse size={28} style={{ color: '#ef4444' }} /> ML Health Impact Predictor</h1>
           <span className="live-badge live"><span className="live-dot"></span>Live Data</span>
         </div>
-        <p>ML models: {data.summary?.models_used?.join(' • ')} — {filtered.length} zones analyzed</p>
       </div>
 
       {/* City filter */}

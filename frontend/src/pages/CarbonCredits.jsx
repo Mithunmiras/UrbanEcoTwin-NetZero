@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { api } from '../api/client';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
-import { MapPin } from 'lucide-react';
+import { MapPin, CircleDollarSign } from 'lucide-react';
 
 const COLORS = ['#22c55e', '#3b82f6', '#f97316', '#a855f7', '#eab308', '#ef4444', '#14b8a6', '#f43f5e', '#8b5cf6', '#06b6d4'];
 
@@ -50,9 +50,8 @@ export default function CarbonCredits() {
     <div className="fade-in">
       <div className="page-header" style={{ marginBottom: 24 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-          <div>
-            <h1>💰 Carbon Credit Calculator</h1>
-            <p>Market: {data.market_rates?.market} — Rate: {data.market_rates?.rate_per_tonne_inr}/tonne</p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <h1><CircleDollarSign size={28} style={{ color: '#f97316' }} /> Carbon Credit Calculator</h1>
           </div>
 
           {/* City Selector */}

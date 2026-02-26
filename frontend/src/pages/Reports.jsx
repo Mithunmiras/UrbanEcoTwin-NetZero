@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { api } from '../api/client';
+import { FileText } from 'lucide-react';
 
 export default function Reports() {
   const [data, setData] = useState(null);
@@ -17,8 +18,9 @@ export default function Reports() {
   return (
     <div className="fade-in">
       <div className="page-header">
-        <h1>📋 Policy Report Generator</h1>
-        <p>Report ID: {data.report_id} — Generated for government stakeholders</p>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <h1><FileText size={28} style={{ color: '#64748b' }} /> Policy Report Generator</h1>
+        </div>
       </div>
 
       {/* Report Header */}

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { api } from '../api/client';
+import { Target } from 'lucide-react';
 
 export default function NetZero() {
   const [data, setData] = useState(null);
@@ -15,8 +16,9 @@ export default function NetZero() {
   return (
     <div className="fade-in">
       <div className="page-header">
-        <h1>🎯 Net-Zero Planning</h1>
-        <p>Roadmap to carbon neutrality for {data.city} — Target: {data.target_year}</p>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <h1><Target size={28} style={{ color: '#22c55e' }} /> Net-Zero Planning</h1>
+        </div>
       </div>
 
       {/* Overview Cards */}
