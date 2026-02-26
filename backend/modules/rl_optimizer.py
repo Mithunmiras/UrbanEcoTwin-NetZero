@@ -177,7 +177,7 @@ STRATEGY_TEMPLATES = [
     },
     {
         "name": "Balanced Sustainability",
-        "description": "Balanced approach across all sectors",
+        "description": "Tree planting + solar + EV transition + traffic control",
         "actions": [
             {"type": "tree_planting", "quantity": 5000, "cost_per_unit": 500},
             {"type": "solar_panels", "quantity": 1000, "cost_per_unit": 25000},
@@ -188,7 +188,7 @@ STRATEGY_TEMPLATES = [
     },
     {
         "name": "Maximum Impact",
-        "description": "Aggressive all-sector transformation for fastest results",
+        "description": "Massive tree planting + large-scale solar + EV transition + factory regulation + green cover",
         "actions": [
             {"type": "tree_planting", "quantity": 15000, "cost_per_unit": 500},
             {"type": "solar_panels", "quantity": 3000, "cost_per_unit": 25000},
