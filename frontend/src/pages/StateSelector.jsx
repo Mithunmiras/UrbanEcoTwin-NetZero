@@ -1,5 +1,6 @@
 import { useStateContext } from '../context/StateContext';
-import { Landmark, Trees, Building2, Ship, Leaf } from 'lucide-react';
+import { Landmark, Trees, Building2, Ship } from 'lucide-react';
+import logoImg from '../assets/logo.png';
 
 const STATE_CARDS = [
   {
@@ -59,8 +60,8 @@ export default function StateSelector() {
     }}>
       {/* Header */}
       <div style={{ textAlign: 'center', marginBottom: 48, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <div style={{ marginBottom: 16, background: 'rgba(34,197,94,0.1)', padding: 16, borderRadius: '50%' }}>
-          <Leaf size={48} color="#22c55e" />
+        <div style={{ marginBottom: 16, background: 'rgba(34,197,94,0.1)', padding: 12, borderRadius: '50%' }}>
+          <img src={logoImg} alt="UrbanEcoTwin" style={{ width: 56, height: 56, objectFit: 'cover', borderRadius: '50%' }} />
         </div>
         <h1 style={{
           fontSize: 36,

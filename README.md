@@ -10,7 +10,7 @@
 ![Cesium](https://img.shields.io/badge/Cesium.js-3D_Globe-6CADDF?style=for-the-badge&logo=cesium&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-6-646CFF?style=for-the-badge&logo=vite&logoColor=white)
 
-**An AI-powered sustainability intelligence platform with a 3D Digital Twin of Tamil Nadu cities — fetches live pollution data, predicts emissions with ML, simulates strategies, optimizes carbon reduction, and generates Net-Zero roadmaps.**
+**An AI-powered sustainability intelligence platform with a 3D Digital Twin covering 109 districts across 4 South Indian states — fetches live pollution data, predicts emissions with ML, simulates strategies, optimizes carbon reduction, and generates Net-Zero roadmaps.**
 
 </div>
 
@@ -22,11 +22,13 @@ UrbanEcoTwin-NetZero addresses critical urban sustainability challenges by combi
 
 - 🌐 **3D Digital Twin** — Cesium.js globe with satellite imagery and real-time environmental overlays
 - 📡 **Live Data** — Real-time pollution & weather from Open-Meteo + OpenWeatherMap APIs (dual fallback)
-- 🏛️ **Multi-City** — 50 zones across **Tamil Nadu**: **Chennai** (20), **Coimbatore** (15), and **Madurai** (15)
+- 🏛️ **4 States, 109 Districts** — Full coverage of **Tamil Nadu** (38), **Kerala** (14), **Karnataka** (31), and **Andhra Pradesh** (26)
+- 🔐 **Admin Authentication** — Secure login with SHA-256 hashing and session management
+- 🗺️ **State Selection** — Choose a state to view all its districts' environmental data
 - 🤖 **Machine Learning** — LSTM, XGBoost, Logistic Regression, and Weighted Ensemble models
 - 🧬 **Reinforcement Learning** — DQN-based strategy optimization
 - 🤝 **Multi-Agent System** — 4 autonomous AI agents working collaboratively
-- 📊 **Sustainability Intelligence** — Net-Zero roadmap & carbon credit economics
+- 📊 **Sustainability Intelligence** — Net-Zero roadmap, carbon credit economics, and sustainability scoring
 
 ## 🎯 Core Problem
 
@@ -43,9 +45,9 @@ Cities currently:
 ```
     Live APIs (Open-Meteo + OpenWeatherMap)
               ↓
-    Data Fusion Engine         ← Merges live pollution, weather data for 50 zones
+    Data Fusion Engine         ← Merges live pollution, weather data for 109 districts
               ↓
-    Urban Digital Twin         ← 3D Cesium.js globe with 3 Tamil Nadu cities
+    Urban Digital Twin         ← 3D Cesium.js globe with 4 South Indian states
               ↓
     AI Prediction Engine       ← LSTM + XGBoost CO₂ forecasts (1h, 24h, 7-day)
               ↓
@@ -73,13 +75,23 @@ Cities currently:
 - **5-minute cache**: Reduces API calls while keeping data fresh
 - **Per-zone independent fallback**: Each zone can use a different API source
 
-## 🏙️ Cities & Zones
+## 🗺️ States & Districts (109 Zones)
 
-| City | Zones | Coverage |
-|------|-------|----------|
-| 🏛️ **Chennai** | 20 | Tondiarpet, Madhavaram, Perambur, Ambattur, Egmore, Nungambakkam, Kilpauk, Anna Nagar, Kodambakkam, T. Nagar, Mylapore, Adyar, Guindy, Velachery, Thiruvanmiyur, Porur, Valasaravakkam, Sholinganallur, Chromepet, Tambaram |
-| 🏭 **Coimbatore** | 15 | R.S. Puram, Gandhipuram, Peelamedu, Saibaba Colony, Race Course, Ukkadam, Singanallur, Kuniyamuthur, Ganapathy, Vadavalli, Tidel Park, Podanur, Sulur, Karumbukkadai, Saravanampatti |
-| 🛕 **Madurai** | 15 | Anna Nagar, Goripalayam, Tallakulam, Pasumalai, K.K. Nagar, S.S. Colony, Meenakshi Amman, Thiruparankundram, Vilangudi, Ponmeni, Avaniyapuram, Teppakulam, Harveypatti, Bypass Road, Sellur |
+| State | Districts | Coverage |
+|-------|-----------|----------|
+| 🏛️ **Tamil Nadu** | 38 | Chennai, Coimbatore, Madurai, Tiruchirappalli, Salem, Tirunelveli, Erode, Vellore, Thoothukudi, Dindigul, Thanjavur, Ranipet, Sivaganga, Virudhunagar, Namakkal, Cuddalore, Kanchipuram, Tiruvallur, Tiruppur, Nagapattinam, Ramanathapuram, Theni, Nilgiris, Krishnagiri, Dharmapuri, Karur, Perambalur, Ariyalur, Pudukkottai, Kallakurichi, Tirupattur, Tiruvannamalai, Villupuram, Chengalpattu, Tenkasi, Mayiladuthurai, and more |
+| 🌴 **Kerala** | 14 | Thiruvananthapuram, Kochi, Kozhikode, Thrissur, Kollam, Alappuzha, Palakkad, Malappuram, Kannur, Kottayam, Idukki, Pathanamthitta, Wayanad, Kasaragod |
+| 🏙️ **Karnataka** | 31 | Bengaluru Urban, Mysuru, Mangaluru, Hubballi-Dharwad, Belagavi, Kalaburagi, Ballari, Davangere, Shivamogga, Tumakuru, Raichur, Bidar, Vijayapura, Hassan, Mandya, Chitradurga, Udupi, Chikkamagaluru, Bagalkote, Gadag, Haveri, Koppal, Ramanagara, Chamarajanagara, Kodagu, Yadgir, Chikkaballapur, Bengaluru Rural, Kolar, and more |
+| ⛵ **Andhra Pradesh** | 26 | Visakhapatnam, Vijayawada, Guntur, Nellore, Kurnool, Kakinada, Rajahmundry, Tirupati, Kadapa, Anantapur, Eluru, Ongole, Srikakulam, Vizianagaram, Machilipatnam, Chittoor, Proddatur, Hindupur, Adoni, Narasaraopet, Tenali, Bhimavaram, Amalapuram, Markapur, Parvathipuram, Nandyal |
+
+## 🔐 Authentication
+
+The platform is secured with admin authentication:
+- **Login**: Username and password with SHA-256 hashing
+- **Session**: Token stored in localStorage with React Context
+- **Default credentials**: `admin` / `admin123`
+
+After login, a **State Selection** page lets you choose which state to monitor. All subsequent pages show data filtered for the selected state.
 
 ## 🧪 ML Models
 
@@ -96,31 +108,31 @@ Cities currently:
 
 | # | Module | Description |
 |---|--------|-------------|
-| 1 | **Urban Digital Twin** | 3D Cesium.js globe — 50 zones, 3 cities, satellite imagery |
+| 1 | **Urban Digital Twin** | 3D Cesium.js globe — 109 districts, 4 states, satellite imagery, district dropdown |
 | 2 | **Data Fusion Engine** | Merges live pollution, weather data from dual APIs |
 | 3 | **AI Prediction Engine** | LSTM/XGBoost CO₂ predictions — 1h, 24h, 7-day |
 | 4 | **Scenario Simulation** | Simulate: plant trees, add solar, increase traffic, add factory |
 | 5 | **RL Optimizer** | Deep Q-Network finds best sustainability strategy per zone |
 | 6 | **Multi-Agent AI** | 4 autonomous agents: Monitoring, Prediction, Optimization, Policy |
 | 7 | **Net-Zero Planner** | Year-by-year roadmap with 4 phases to Net-Zero |
-| 8 | **Sustainability Score** | Multi-factor 0-100 scoring per zone with grades |
-| 9 | **Carbon Credit Calculator** | Converts CO₂ reduction to ₹ / $ value |
-| 10 | **Health Impact Predictor** | ML-powered: Logistic Regression + WHO compliance |
-| 11 | **Policy Report Generator** | Government-ready comprehensive report |
-| 12 | **Alert System** | Multi-level threshold alerts (Critical / Warning / Info) |
+| 8 | **Sustainability & Carbon Credits** | Multi-factor 0-100 scoring per zone with grades + carbon credit economics |
+| 9 | **Health Impact Predictor** | ML-powered: Logistic Regression + WHO compliance |
+| 10 | **Policy Report Generator** | Government-ready comprehensive report |
+| 11 | **Alert System** | Multi-level threshold alerts (Critical / Warning / Info) |
 
 ## 🖥️ Dashboard Features
 
 | Feature | Description |
 |---------|-------------|
+| 🔐 **Admin Login** | Secure authentication with carbon credit themed UI |
+| 🗺️ **State Selector** | Choose Tamil Nadu, Kerala, Karnataka, or Andhra Pradesh |
 | 📊 **Overview Dashboard** | Key metrics, CO₂ charts, risk distribution, live alerts |
-| 🌍 **3D Digital Twin** | Cesium.js globe with satellite imagery, city-switching, zone selection |
+| 🌍 **3D Digital Twin** | Cesium.js globe with satellite imagery, district dropdown, zone selection |
 | 📈 **Prediction Charts** | Area/line charts for hourly and weekly CO₂ forecasts |
 | 🎛️ **Scenario Simulator** | Interactive sliders to test sustainability actions |
 | 📅 **Net-Zero Timeline** | Phase-wise roadmap with progress indicators |
 | ❤️ **Health Dashboard** | ML risk scores, condition probabilities, WHO compliance |
-| 🕸️ **Radar Charts** | Multi-factor sustainability scoring per zone |
-| 💰 **Carbon Economics** | Pie charts and tables for carbon credit calculations |
+| 🕸️ **Sustainability & Credits** | Radar charts, carbon credit pie charts, zone-wise breakdown |
 
 ## 🧰 Technology Stack
 
@@ -131,6 +143,7 @@ Cities currently:
 | **Backend** | Python 3.10+, FastAPI, Uvicorn |
 | **Live Data** | Open-Meteo API, OpenWeatherMap API (dual fallback) |
 | **AI/ML** | NumPy, Logistic Regression, Weighted Ensemble, DQN |
+| **Auth** | SHA-256 hashing, localStorage tokens, React Context |
 | **Visualization** | Recharts (Bar, Line, Area, Pie, Radar), Cesium.js 3D Globe |
 
 ## 🚀 Quick Start
@@ -170,26 +183,29 @@ npm run dev
 Frontend at `http://localhost:5173`
 
 ### 4. Open in Browser
-Navigate to **http://localhost:5173** to view the dashboard.
+Navigate to **http://localhost:5173**, log in with `admin` / `admin123`, select a state, and explore.
 
 ## 📡 API Endpoints
 
+All data endpoints accept an optional `?state=` query parameter (`tamilnadu`, `kerala`, `karnataka`, `andhrapradesh`).
+
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/api/cities` | List available cities |
-| GET | `/api/zones` | Digital twin zone data (optionally `?city=coimbatore`) |
-| GET | `/api/data-fusion` | Unified environmental data |
-| GET | `/api/predictions` | AI CO₂ predictions |
+| GET | `/api/states` | List available states |
+| GET | `/api/cities?state=` | List districts for a state |
+| GET | `/api/zones?state=` | Digital twin zone data |
+| GET | `/api/data-fusion?state=` | Unified environmental data |
+| GET | `/api/predictions?state=` | AI CO₂ predictions |
 | POST | `/api/simulate` | Run scenario simulation |
 | GET | `/api/simulate/actions` | Available simulation actions |
-| GET | `/api/optimize` | RL optimizer results |
+| GET | `/api/optimize?state=` | RL optimizer results |
 | GET | `/api/agents` | Multi-agent system analysis |
-| GET | `/api/netzero` | Net-Zero roadmap |
-| GET | `/api/scores` | Sustainability scores |
-| GET | `/api/carbon-credits` | Carbon credit calculations |
-| GET | `/api/health` | ML health impact predictions |
-| GET | `/api/report` | Policy report |
-| GET | `/api/alerts` | Active alerts |
+| GET | `/api/netzero?state=` | Net-Zero roadmap |
+| GET | `/api/scores?state=` | Sustainability scores |
+| GET | `/api/carbon-credits?state=` | Carbon credit calculations |
+| GET | `/api/health?state=` | ML health impact predictions |
+| GET | `/api/report?state=` | Policy report |
+| GET | `/api/alerts?state=` | Active alerts |
 
 ## 📂 Project Structure
 
@@ -199,7 +215,7 @@ UrbanEcoTwin-NetZero/
 │   ├── main.py                    # FastAPI entry point
 │   ├── requirements.txt           # Python dependencies
 │   ├── data/
-│   │   ├── city_data.py           # 50 zones across 3 cities (live data)
+│   │   ├── city_data.py           # 109 districts across 4 states (live data)
 │   │   └── live_data.py           # Open-Meteo + OpenWeatherMap client
 │   ├── modules/
 │   │   ├── digital_twin.py        # Urban Digital Twin
@@ -215,27 +231,30 @@ UrbanEcoTwin-NetZero/
 │   │   ├── policy_report.py       # Policy Report Generator
 │   │   └── alerts.py              # Alert System
 │   └── routers/
-│       └── api.py                 # All REST endpoints
+│       └── api.py                 # All REST endpoints (state-filtered)
 ├── frontend/
 │   ├── src/
-│   │   ├── App.jsx                # Main app with routing
+│   │   ├── App.jsx                # Main app with auth + state routing
 │   │   ├── index.css              # Premium design system
 │   │   ├── main.jsx               # React entry point
 │   │   ├── api/
-│   │   │   └── client.js          # API client
+│   │   │   └── client.js          # API client (state-aware)
+│   │   ├── context/
+│   │   │   ├── AuthContext.jsx     # Authentication context
+│   │   │   └── StateContext.jsx    # State selection context
 │   │   ├── components/
-│   │   │   ├── Sidebar.jsx        # Navigation sidebar
-│   │   │   └── CesiumCityView.jsx # 3D globe component
+│   │   │   ├── Sidebar.jsx        # Navigation sidebar with state indicator
+│   │   │   └── CesiumCityView.jsx # 3D globe component (4-state cameras)
 │   │   └── pages/
+│   │       ├── Login.jsx          # Admin login page
+│   │       ├── StateSelector.jsx  # State selection screen
 │   │       ├── Dashboard.jsx      # Overview dashboard
-│   │       ├── DigitalTwin.jsx    # 3D Cesium globe
-│   │       ├── Predictions.jsx    # AI predictions (city→zone flow)
+│   │       ├── DigitalTwin.jsx    # 3D Cesium globe + district dropdown
+│   │       ├── Predictions.jsx    # AI predictions (state-filtered)
 │   │       ├── Simulation.jsx     # Scenario simulator
 │   │       ├── Optimize.jsx       # RL optimizer
-│   │       ├── Agents.jsx         # Multi-agent system
 │   │       ├── NetZero.jsx        # Net-Zero roadmap
-│   │       ├── Scores.jsx         # Sustainability scores
-│   │       ├── CarbonCredits.jsx  # Carbon credits
+│   │       ├── Scores.jsx         # Sustainability + Carbon Credits
 │   │       ├── Health.jsx         # ML health impact
 │   │       ├── Reports.jsx        # Policy reports
 │   │       └── Alerts.jsx         # Alert system
@@ -247,11 +266,12 @@ UrbanEcoTwin-NetZero/
 
 ## 🌱 Sustainability Impact
 
-- ✅ Real-time environmental intelligence across 3 Tamil Nadu cities
+- ✅ Real-time environmental intelligence across 4 South Indian states (109 districts)
 - ✅ ML-powered health risk assessment with WHO compliance
 - ✅ Data-driven Net-Zero planning with carbon credit economics
 - ✅ Smart city decision support with scenario simulation
 - ✅ Health-aware environmental policy generation
+- ✅ State-level comparative analysis and sustainability scoring
 
 ## 🏆 Innovation Highlights
 
@@ -259,12 +279,14 @@ UrbanEcoTwin-NetZero/
 |---------|---------|
 | 3D Cesium Globe Digital Twin | ⭐⭐⭐⭐⭐ Very High |
 | Live Dual-API Data Pipeline | ⭐⭐⭐⭐⭐ Very High |
+| 4-State Multi-Region Coverage (109 districts) | ⭐⭐⭐⭐⭐ Very High |
 | ML Health Impact (Logistic Regression) | ⭐⭐⭐⭐⭐ Very High |
-| Multi-City Coverage (50 zones) | ⭐⭐⭐⭐ High |
 | AI Prediction (LSTM + XGBoost) | ⭐⭐⭐⭐ High |
 | Reinforcement Learning Optimizer | ⭐⭐⭐⭐⭐ Very High |
 | Multi-Agent AI System | ⭐⭐⭐⭐⭐ Very High |
 | Net-Zero Roadmap + Carbon Credits | ⭐⭐⭐⭐⭐ Extremely High |
+| Secure Admin Authentication | ⭐⭐⭐⭐ High |
+| State Selection + Filtering | ⭐⭐⭐⭐ High |
 
 ## 📜 License
 
