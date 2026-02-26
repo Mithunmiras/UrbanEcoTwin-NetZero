@@ -89,6 +89,26 @@ STRATEGY_TEMPLATES = [
     },
 ]
 
+# Light strategies for zones with smaller budget allocation (~5–15 Cr)
+LIGHT_STRATEGY_TEMPLATES = [
+    {"name": "Light Green", "actions": [{"type": "tree_planting", "quantity": 1250, "cost_per_unit": 500}, {"type": "green_cover", "quantity": 2, "cost_per_unit": 5000000}]},
+    {"name": "Light Solar", "actions": [{"type": "solar_panels", "quantity": 200, "cost_per_unit": 25000}, {"type": "ev_transition", "quantity": 50, "cost_per_unit": 200000}]},
+    {"name": "Light Traffic", "actions": [{"type": "traffic_control", "quantity": 2000, "cost_per_unit": 100}, {"type": "factory_regulation", "quantity": 1, "cost_per_unit": 10000000}]},
+]
+
+
+def _get_all_strategies_for_budget(zone, include_light=True):
+    """Get all strategies including light variants for budget-constrained allocation."""
+    all_strats = []
+    for s in STRATEGY_TEMPLATES:
+        ev = _evaluate_strategy(zone, s["actions"])
+        all_strats.append({"strategy_name": s["name"], "description": s["description"], "actions": s["actions"], **ev})
+    if include_light:
+        for s in LIGHT_STRATEGY_TEMPLATES:
+            ev = _evaluate_strategy(zone, s["actions"])
+            all_strats.append({"strategy_name": s["name"], "description": "Scaled intervention", "actions": s["actions"], **ev})
+    return sorted(all_strats, key=lambda x: x["efficiency_score"], reverse=True)
+
 
 def optimize(zone_id: str = None):
     """Run RL-style optimization to find best strategy for each zone."""
@@ -127,4 +147,123 @@ def optimize(zone_id: str = None):
         "algorithm": "Deep Q-Network (DQN) with Multi-Objective Optimization",
         "training_episodes": 5000,
         "timestamp": __import__("datetime").datetime.now().isoformat(),
+    }
+
+
+def _compute_need_score(co2_ppm: float, aqi: float) -> float:
+    """Need score 0–100+: higher CO2/AQI = higher need. WHO-ish: CO2 safe <400, AQI good <50."""
+    co2_excess = max(0, co2_ppm - 380)
+    aqi_excess = max(0, aqi - 50)
+    return 0.5 * min(co2_excess, 120) + 0.5 * min(aqi_excess, 200) * 0.5  # scale so ~0-80
+
+
+def _is_low_need(co2_ppm: float, aqi: float) -> bool:
+    """Zones with good air quality don't need budget."""
+    return co2_ppm < 400 and aqi < 80
+
+
+def optimize_with_budget(budget_inr: float):
+    """
+    Need-based budget allocation:
+    - Low-need zones (CO2 < 400, AQI < 80): "Not Required"
+    - High-need zones: allocate budget proportionally to need; higher need = larger share
+    - Pick best strategy that fits within each zone's allocated share
+    """
+    results = optimize()
+    zones = get_all_zones()
+    zone_lookup = {z["id"]: z for z in zones}
+
+    zone_results = results.get("optimization_results", [])
+    needing = []
+    not_required = []
+
+    for r in zone_results:
+        zid = r["zone_id"]
+        z = zone_lookup.get(zid, {})
+        co2 = float(z.get("current_co2_ppm", r.get("current_co2_ppm", 420)))
+        aqi = float(z.get("current_aqi", 100))
+
+        if _is_low_need(co2, aqi):
+            not_required.append({
+                "zone_id": zid,
+                "zone_name": r["zone_name"],
+                "current_co2_ppm": co2,
+                "current_aqi": aqi,
+                "budget_used": 0,
+                "best_strategy": None,
+                "note": f"Not Required — Air quality satisfactory (CO₂: {co2:.0f} ppm, AQI: {aqi:.0f})",
+                "need_level": "low",
+            })
+        else:
+            need_score = _compute_need_score(co2, aqi)
+            needing.append({
+                **r,
+                "current_aqi": aqi,
+                "need_score": round(need_score, 1),
+            })
+
+    total_need = sum(n["need_score"] for n in needing)
+    if total_need <= 0:
+        total_need = 1
+    remaining = budget_inr
+    constrained = []
+    total_reduction = 0
+    total_spent = 0
+
+    # Sort by need (highest first) for priority
+    needing = sorted(needing, key=lambda x: x["need_score"], reverse=True)
+
+    zone_by_id = {z["id"]: z for z in zones}
+    for r in needing:
+        need_score = r["need_score"]
+        share = (need_score / total_need) * budget_inr
+        cap = min(share, remaining)
+        zone_data = zone_by_id.get(r["zone_id"], {"current_co2_ppm": r["current_co2_ppm"], "current_aqi": r.get("current_aqi", 100)})
+        all_strats = _get_all_strategies_for_budget(zone_data)
+        strategies = [s for s in all_strats if s.get("estimated_cost_inr", 0) <= cap]
+        if strategies:
+            best = max(strategies, key=lambda s: s.get("efficiency_score", 0))
+            cost = best.get("estimated_cost_inr", 0)
+            remaining -= cost
+            total_spent += cost
+            total_reduction += best.get("reduction_ppm", 0)
+            constrained.append({
+                "zone_id": r["zone_id"],
+                "zone_name": r["zone_name"],
+                "current_co2_ppm": r["current_co2_ppm"],
+                "current_aqi": r.get("current_aqi"),
+                "need_score": need_score,
+                "budget_used": cost,
+                "best_strategy": best,
+                "note": "Allocated",
+                "need_level": "high" if need_score > 30 else "moderate",
+            })
+        else:
+            cheapest = min(all_strats, key=lambda s: s.get("estimated_cost_inr", float("inf")))
+            cost_need = cheapest.get("estimated_cost_inr", 0)
+            constrained.append({
+                "zone_id": r["zone_id"],
+                "zone_name": r["zone_name"],
+                "current_co2_ppm": r["current_co2_ppm"],
+                "current_aqi": r.get("current_aqi"),
+                "need_score": need_score,
+                "budget_used": 0,
+                "best_strategy": None,
+                "note": f"Requires ₹{cost_need/10000000:.1f} Cr (allocated ₹{cap/10000000:.1f} Cr) — budget insufficient",
+                "need_level": "high" if need_score > 30 else "moderate",
+            })
+
+    # Merge: needing zones first (by need), then not_required
+    all_results = constrained + not_required
+    zones_funded = len([c for c in constrained if c.get("best_strategy")])
+    zones_not_required = len(not_required)
+
+    return {
+        "budget_constraint_inr": budget_inr,
+        "total_spent_inr": total_spent,
+        "zones_funded": zones_funded,
+        "zones_not_required": zones_not_required,
+        "zones_underfunded": len([c for c in constrained if not c.get("best_strategy")]),
+        "total_co2_reduction_ppm": round(total_reduction, 2),
+        "results": all_results,
     }

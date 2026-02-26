@@ -2,6 +2,14 @@
 API Router — All REST endpoints for UrbanEcoTwin-NetZero.
 """
 
+import json
+try:
+    import numpy as np
+    _HAS_NUMPY = True
+except ImportError:
+    _HAS_NUMPY = False
+    np = None
+
 from fastapi import APIRouter, Query
 from pydantic import BaseModel
 from typing import List, Optional
@@ -9,10 +17,9 @@ from typing import List, Optional
 from modules.digital_twin import get_digital_twin
 from data.city_data import get_cities
 from modules.data_fusion import fuse_data
-from modules.prediction_engine import get_predictions
+from modules.prediction_engine import get_predictions, get_counterfactual_prediction
 from modules.scenario_simulation import simulate_scenario, get_available_actions
-from modules.rl_optimizer import optimize
-from modules.multi_agent import get_all_agents
+from modules.rl_optimizer import optimize, optimize_with_budget
 from modules.netzero_planner import generate_netzero_roadmap
 from modules.sustainability_score import get_sustainability_scores
 from modules.carbon_credits import calculate_carbon_credits
@@ -56,8 +63,17 @@ def api_data_fusion():
 
 @router.get("/predictions")
 def api_predictions(zone_id: Optional[str] = Query(None)):
-    """Get AI-powered CO₂ predictions."""
+    """Get AI-powered multi-horizon CO₂ predictions (1h/24h/7d/30d) with SHAP explainability."""
     return get_predictions(zone_id)
+
+
+@router.get("/predictions/counterfactual")
+def api_counterfactual(
+    zone_id: str = Query(..., description="Zone ID"),
+    traffic_reduction_pct: float = Query(0, ge=0, le=100, description="Traffic reduction % to simulate"),
+):
+    """Counterfactual: 'What if traffic reduces by X%?' — recalculates prediction."""
+    return get_counterfactual_prediction(zone_id, traffic_reduction_pct)
 
 
 @router.post("/simulate")
@@ -74,15 +90,17 @@ def api_available_actions():
 
 
 @router.get("/optimize")
-def api_optimize(zone_id: Optional[str] = Query(None)):
-    """Get RL-optimized sustainability strategies."""
-    return optimize(zone_id)
+def api_optimize(
+    zone_id: Optional[str] = Query(None),
+    budget_inr: Optional[float] = Query(None, description="Budget constraint in INR (e.g. 100000000 for ₹100 Cr)"),
+):
+    """Get RL-optimized sustainability strategies. Optional budget_inr for dynamic budget constraint."""
+    result = optimize(zone_id)
+    if budget_inr and budget_inr > 0:
+        result["budget_constrained"] = optimize_with_budget(budget_inr)
+    return result
 
 
-@router.get("/agents")
-def api_agents():
-    """Get multi-agent system analysis."""
-    return get_all_agents()
 
 
 @router.get("/netzero")

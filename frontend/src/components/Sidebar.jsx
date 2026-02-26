@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router-dom';
 import {
   LayoutDashboard, Globe, BrainCircuit, FlaskConical, Cpu,
-  Network, Target, Star, Coins, HeartPulse, FileText, Bell
+  Target, Star, Coins, Wallet, HeartPulse, FileText, Bell
 } from 'lucide-react';
 
 const navItems = [
@@ -11,11 +11,11 @@ const navItems = [
   { to: '/simulation', icon: <FlaskConical size={18} />, label: 'Simulation' },
   { section: 'Intelligence' },
   { to: '/optimize', icon: <Cpu size={18} />, label: 'RL Optimizer' },
-  { to: '/agents', icon: <Network size={18} />, label: 'Multi-Agent AI' },
   { to: '/netzero', icon: <Target size={18} />, label: 'Net-Zero Plan' },
   { section: 'Analytics' },
   { to: '/scores', icon: <Star size={18} />, label: 'Sustainability' },
   { to: '/carbon-credits', icon: <Coins size={18} />, label: 'Carbon Credits' },
+  { to: '/budget-constraint', icon: <Wallet size={18} />, label: 'Budget Constraint' },
   { to: '/health', icon: <HeartPulse size={18} />, label: 'Health Impact' },
   { to: '/reports', icon: <FileText size={18} />, label: 'Policy Report' },
   { to: '/alerts', icon: <Bell size={18} />, label: 'Alerts' },
