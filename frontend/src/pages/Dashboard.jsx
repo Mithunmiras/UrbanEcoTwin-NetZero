@@ -20,6 +20,7 @@ export default function Dashboard() {
 
   const [selectedRiskCategory, setSelectedRiskCategory] = useState(null);
   const [selectedCityScore, setSelectedCityScore] = useState('All');
+  const [showAllAlerts, setShowAllAlerts] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -316,7 +317,7 @@ export default function Dashboard() {
         </ResponsiveContainer>
       </div>
 
-      {/* Alerts */}
+      {/* Alerts Summary */}
       {alerts && alerts.alerts.length > 0 && (
         <div className="card" style={{ marginBottom: 24 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
@@ -325,9 +326,12 @@ export default function Dashboard() {
               Active Alerts ({alerts.total_alerts})
             </h3>
             {alerts.total_alerts > 5 && (
-              <Link to="/alerts" style={{ background: '#3b82f6', color: '#0f172a', padding: '6px 12px', borderRadius: '6px', textDecoration: 'none', fontSize: 13, fontWeight: 500, transition: 'background 0.2s' }}>
+              <button
+                onClick={() => setShowAllAlerts(true)}
+                style={{ background: '#3b82f6', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer', fontSize: 13, fontWeight: 500, transition: 'background 0.2s' }}
+              >
                 View All {alerts.total_alerts} Alerts →
-              </Link>
+              </button>
             )}
           </div>
           {alerts.alerts.slice(0, 5).map((alert, i) => (
@@ -339,6 +343,43 @@ export default function Dashboard() {
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* View All Alerts Modal Popup */}
+      {showAllAlerts && alerts && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          backgroundColor: 'rgba(15, 23, 42, 0.7)', backdropFilter: 'blur(4px)',
+          display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000
+        }} onClick={() => setShowAllAlerts(false)}>
+          <div style={{
+            background: '#ffffff', width: '90%', maxWidth: 700, maxHeight: '85vh',
+            borderRadius: 16, display: 'flex', flexDirection: 'column',
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
+          }} onClick={e => e.stopPropagation()}>
+            <div style={{ padding: '20px 24px', borderBottom: '1px solid rgba(0,0,0,0.08)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h2 style={{ margin: 0, fontSize: 20, display: 'flex', alignItems: 'center', gap: 10 }}>
+                <AlertTriangle size={24} color="var(--accent-red)" />
+                All Active Alerts
+              </h2>
+              <button onClick={() => setShowAllAlerts(false)} style={{ background: 'transparent', border: 'none', fontSize: 24, color: '#64748b', cursor: 'pointer' }}>×</button>
+            </div>
+            <div style={{ padding: '24px', overflowY: 'auto', flex: 1 }}>
+              {alerts.alerts.map((alert, i) => (
+                <div key={i} className={`alert-item ${alert.severity}`} style={{ marginBottom: 12 }}>
+                  <div className="alert-content">
+                    <h4>{alert.title}</h4>
+                    <p style={{ marginTop: 4, marginBottom: 8 }}>{alert.message}</p>
+                    <div className="alert-meta" style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+                      <span style={{ fontWeight: 600 }}>{alert.zone_name}</span>
+                      <span>Action: {alert.recommended_action}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       )}
     </div>

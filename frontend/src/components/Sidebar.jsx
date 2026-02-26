@@ -20,7 +20,6 @@ const navItems = [
   { to: '/budget-constraint', icon: <Wallet size={18} />, label: 'Budget Constraint' },
   { to: '/health', icon: <HeartPulse size={18} />, label: 'Health Impact' },
   { to: '/reports', icon: <FileText size={18} />, label: 'Policy Report' },
-  { to: '/alerts', icon: <Bell size={18} />, label: 'Alerts' },
 ];
 
 export default function Sidebar() {
