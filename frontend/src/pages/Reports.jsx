@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { api } from '../api/client';
 import { useStateContext } from '../context/StateContext';
-import { FileText } from 'lucide-react';
+import { FileText, Building2, ListChecks, Target } from 'lucide-react';
 
 export default function Reports() {
   const { selectedState, stateName } = useStateContext();
@@ -61,7 +61,7 @@ export default function Reports() {
 
       {/* Pollution Overview */}
       <div className="card" style={{ marginBottom: 24 }}>
-        <h3 style={{ marginBottom: 16 }}>🏙️ Current State — {data.current_state?.worst_zone} is the most polluted zone</h3>
+        <h3 style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}><Building2 size={20} color="var(--accent-blue)" /> Current State — {data.current_state?.worst_zone} is the most polluted zone</h3>
         <table className="data-table">
           <thead>
             <tr>
@@ -84,7 +84,7 @@ export default function Reports() {
 
       {/* Recommendations */}
       <div className="card" style={{ marginBottom: 24 }}>
-        <h3 style={{ marginBottom: 16 }}>📌 Policy Recommendations</h3>
+        <h3 style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}><ListChecks size={20} color="var(--accent-orange)" /> Policy Recommendations</h3>
         {data.recommendations?.map((r, i) => (
           <div key={i} className={`alert-item ${r.priority.toLowerCase()}`}>
             <div className="alert-content">
@@ -97,7 +97,7 @@ export default function Reports() {
 
       {/* Net-Zero Summary */}
       <div className="card">
-        <h3 style={{ marginBottom: 16 }}>🎯 Net-Zero Roadmap Summary</h3>
+        <h3 style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}><Target size={20} color="var(--accent-green)" /> Net-Zero Roadmap Summary</h3>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16 }}>
           <div style={{ padding: 16, borderRadius: 'var(--radius-sm)', background: 'var(--bg-glass)' }}>
             <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>Target Year</div>
