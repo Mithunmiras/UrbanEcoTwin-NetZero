@@ -26,9 +26,9 @@ RISK_COLORS = {
 }
 
 
-def get_digital_twin():
+def get_digital_twin(city=None):
     """Returns the full digital twin state for all zones."""
-    zones = get_all_zones()
+    zones = get_all_zones(city=city)
     twin_data = []
     for zone in zones:
         risk = classify_risk(zone["current_co2_ppm"], zone["current_aqi"])
@@ -37,18 +37,30 @@ def get_digital_twin():
             "name": zone["name"],
             "lat": zone["lat"],
             "lng": zone["lng"],
-            "population": zone["population"],
-            "area_sq_km": zone["area_sq_km"],
             "current_co2_ppm": zone["current_co2_ppm"],
             "current_aqi": zone["current_aqi"],
-            "green_cover_pct": zone["green_cover_pct"],
-            "traffic_index": zone["traffic_index"],
-            "renewable_energy_pct": zone["renewable_energy_pct"],
+            "avg_temperature_c": zone.get("avg_temperature_c", 30.0),
+            "avg_humidity_pct": zone.get("avg_humidity_pct", 70),
+            "avg_wind_speed_kmh": zone.get("avg_wind_speed_kmh", 12.0),
+            "pm10": zone.get("pm10", 0),
+            "pm2_5": zone.get("pm2_5", 0),
+            "carbon_monoxide_ugm3": zone.get("carbon_monoxide_ugm3", 0),
+            "nitrogen_dioxide_ugm3": zone.get("nitrogen_dioxide_ugm3", 0),
+            "sulphur_dioxide_ugm3": zone.get("sulphur_dioxide_ugm3", 0),
+            "ozone_ugm3": zone.get("ozone_ugm3", 0),
             "risk_level": risk,
             "risk_color": RISK_COLORS[risk],
-            "tree_count": zone["tree_count"],
-            "solar_panels_installed": zone["solar_panels_installed"],
-            "factories": zone["factories"],
+            "source": zone.get("source", "live"),
+            "api_source": zone.get("api_source", "Open-Meteo"),
+            # Optional fields (may not exist for all zones)
+            "population": zone.get("population"),
+            "area_sq_km": zone.get("area_sq_km"),
+            "green_cover_pct": zone.get("green_cover_pct"),
+            "traffic_index": zone.get("traffic_index"),
+            "renewable_energy_pct": zone.get("renewable_energy_pct"),
+            "tree_count": zone.get("tree_count"),
+            "solar_panels_installed": zone.get("solar_panels_installed"),
+            "factories": zone.get("factories"),
         })
     return {
         "city": "Chennai",

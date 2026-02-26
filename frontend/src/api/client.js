@@ -17,7 +17,8 @@ async function postAPI(endpoint, body) {
 }
 
 export const api = {
-  getZones: () => fetchAPI('/zones'),
+  getCities: () => fetchAPI('/cities'),
+  getZones: (city) => fetchAPI(`/zones${city ? `?city=${city}` : ''}`),
   getDataFusion: () => fetchAPI('/data-fusion'),
   getPredictions: (zoneId) => fetchAPI(`/predictions${zoneId ? `?zone_id=${zoneId}` : ''}`),
   simulate: (zoneId, actions) => postAPI('/simulate', { zone_id: zoneId, actions }),

@@ -13,9 +13,9 @@ def fuse_data():
     for zone in zones:
         # Calculate composite environmental index
         pollution_factor = zone["current_aqi"] / 500  # Normalized 0-1
-        traffic_factor = zone["traffic_index"] / 100
-        green_factor = 1 - (zone["green_cover_pct"] / 100)
-        renewable_factor = 1 - (zone["renewable_energy_pct"] / 100)
+        traffic_factor = zone.get("traffic_index", 70) / 100
+        green_factor = 1 - (zone.get("green_cover_pct", 20.0) / 100)
+        renewable_factor = 1 - (zone.get("renewable_energy_pct", 10.0) / 100)
 
         environmental_stress = round(
             (pollution_factor * 0.35 + traffic_factor * 0.25 +
@@ -34,23 +34,23 @@ def fuse_data():
                     "temperature_c": zone["avg_temperature_c"],
                     "humidity_pct": zone["avg_humidity_pct"],
                     "wind_speed_kmh": zone["avg_wind_speed_kmh"],
-                    "rainfall_mm_annual": zone["rainfall_mm_annual"],
+                    "rainfall_mm_annual": zone.get("rainfall_mm_annual", 1350),
                 },
                 "traffic": {
-                    "traffic_index": zone["traffic_index"],
-                    "ev_adoption_pct": zone["ev_adoption_pct"],
+                    "traffic_index": zone.get("traffic_index", 70),
+                    "ev_adoption_pct": zone.get("ev_adoption_pct", 3.0),
                 },
                 "demographics": {
-                    "population": zone["population"],
-                    "area_sq_km": zone["area_sq_km"],
-                    "population_density": round(zone["population"] / zone["area_sq_km"]),
+                    "population": zone.get("population", 200000),
+                    "area_sq_km": zone.get("area_sq_km", 5.0),
+                    "population_density": round(zone.get("population", 200000) / zone.get("area_sq_km", 5.0)),
                 },
                 "infrastructure": {
-                    "green_cover_pct": zone["green_cover_pct"],
-                    "renewable_energy_pct": zone["renewable_energy_pct"],
-                    "tree_count": zone["tree_count"],
-                    "solar_panels": zone["solar_panels_installed"],
-                    "factories": zone["factories"],
+                    "green_cover_pct": zone.get("green_cover_pct", 20.0),
+                    "renewable_energy_pct": zone.get("renewable_energy_pct", 10.0),
+                    "tree_count": zone.get("tree_count", 10000),
+                    "solar_panels": zone.get("solar_panels_installed", 200),
+                    "factories": zone.get("factories", 10),
                 },
             },
             "environmental_stress_index": environmental_stress,

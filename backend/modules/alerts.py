@@ -94,7 +94,7 @@ def get_alerts():
             alert_id += 1
 
         # Low green cover alert
-        if zone["green_cover_pct"] < 20:
+        if zone.get("green_cover_pct", 20.0) < 20:
             alerts.append({
                 "id": alert_id,
                 "zone_id": zone["id"],
@@ -104,7 +104,7 @@ def get_alerts():
                 "color": "#3b82f6",
                 "title": "🌳 Low Green Cover",
                 "message": f"Green cover at only {zone['green_cover_pct']}% in {zone['name']} — below recommended 25%",
-                "value": zone["green_cover_pct"],
+                "value": zone.get("green_cover_pct", 20.0),
                 "threshold": 25,
                 "recommended_action": "Initiate tree planting and urban greening programs.",
                 "timestamp": datetime.now().isoformat(),

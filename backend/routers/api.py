@@ -7,6 +7,7 @@ from pydantic import BaseModel
 from typing import List, Optional
 
 from modules.digital_twin import get_digital_twin
+from data.city_data import get_cities
 from modules.data_fusion import fuse_data
 from modules.prediction_engine import get_predictions
 from modules.scenario_simulation import simulate_scenario, get_available_actions
@@ -35,10 +36,16 @@ class SimulationRequest(BaseModel):
 
 # --- Endpoints ---
 
+@router.get("/cities")
+def api_cities():
+    """Get list of available cities."""
+    return {"cities": get_cities()}
+
+
 @router.get("/zones")
-def api_zones():
-    """Get digital twin data for all city zones."""
-    return get_digital_twin()
+def api_zones(city: Optional[str] = Query(None)):
+    """Get digital twin data for all city zones. Optionally filter by city."""
+    return get_digital_twin(city=city)
 
 
 @router.get("/data-fusion")

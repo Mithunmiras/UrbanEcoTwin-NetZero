@@ -7,9 +7,10 @@
 ![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.104-009688?style=for-the-badge&logo=fastapi&logoColor=white)
 ![React](https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react&logoColor=black)
+![Cesium](https://img.shields.io/badge/Cesium.js-3D_Globe-6CADDF?style=for-the-badge&logo=cesium&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-6-646CFF?style=for-the-badge&logo=vite&logoColor=white)
 
-**An AI-powered sustainability intelligence platform that creates a Digital Twin of Chennai and autonomously predicts emissions, simulates strategies, optimizes carbon reduction, and generates a Net-Zero roadmap.**
+**An AI-powered sustainability intelligence platform with a 3D Digital Twin of Indian metros — fetches live pollution data, predicts emissions with ML, simulates strategies, optimizes carbon reduction, and generates Net-Zero roadmaps.**
 
 </div>
 
@@ -19,8 +20,10 @@
 
 UrbanEcoTwin-NetZero addresses critical urban sustainability challenges by combining:
 
-- 🏙️ **Digital Twin** — Virtual replica of a city with real-time environmental monitoring
-- 🤖 **Artificial Intelligence** — LSTM & XGBoost-based CO₂ prediction engine
+- 🌐 **3D Digital Twin** — Cesium.js globe with satellite imagery and real-time environmental overlays
+- 📡 **Live Data** — Real-time pollution & weather from Open-Meteo + OpenWeatherMap APIs (dual fallback)
+- 🏙️ **Multi-City** — 50 zones across **Chennai** (20), **Mumbai** (15), and **Delhi** (15)
+- 🤖 **Machine Learning** — LSTM, XGBoost, Logistic Regression, and Weighted Ensemble models
 - 🧬 **Reinforcement Learning** — DQN-based strategy optimization
 - 🤝 **Multi-Agent System** — 4 autonomous AI agents working collaboratively
 - 📊 **Sustainability Intelligence** — Net-Zero roadmap & carbon credit economics
@@ -38,67 +41,97 @@ Cities currently:
 ## 🏗️ System Architecture
 
 ```
-Real-World Environmental Data
-        ↓
-   Data Fusion Engine         ← Merges pollution, weather, traffic, population data
-        ↓
-  Urban Digital Twin Model    ← Virtual city with 5 monitored zones
-        ↓
-   AI Prediction Engine       ← LSTM + XGBoost CO₂ forecasts (1h, 24h, 7-day)
-        ↓
- Scenario Simulation Engine   ← Test: trees, solar, EVs, factories
-        ↓
-Reinforcement Learning Optimizer ← DQN finds optimal strategy
-        ↓
-  Multi-Agent AI Layer        ← 4 autonomous agents (Monitor, Predict, Optimize, Policy)
-        ↓
-  Net-Zero Planning Engine    ← Phase-wise roadmap to carbon neutrality
-        ↓
-  Carbon Credit Calculator    ← CO₂ reduction → monetary value
-        ↓
-   Dashboard + Reports        ← Premium interactive visualization
+    Live APIs (Open-Meteo + OpenWeatherMap)
+              ↓
+    Data Fusion Engine         ← Merges live pollution, weather data for 50 zones
+              ↓
+    Urban Digital Twin         ← 3D Cesium.js globe with 3 Indian metros
+              ↓
+    AI Prediction Engine       ← LSTM + XGBoost CO₂ forecasts (1h, 24h, 7-day)
+              ↓
+    ML Health Impact Predictor ← Logistic Regression + WHO compliance
+              ↓
+    Scenario Simulation Engine ← Test: trees, solar, EVs, factories
+              ↓
+    RL Optimizer (DQN)         ← Finds optimal sustainability strategy
+              ↓
+    Multi-Agent AI Layer       ← 4 autonomous agents collaborate
+              ↓
+    Net-Zero Planning Engine   ← Phase-wise roadmap to carbon neutrality
+              ↓
+    Dashboard + 3D Globe       ← Premium interactive visualization
 ```
+
+## 🌐 Live Data Sources
+
+| API | Data | Key Required? |
+|-----|------|---------------|
+| **Open-Meteo** (Primary) | AQI, PM2.5, PM10, CO, NO₂, SO₂, O₃, Temperature, Humidity, Wind | ❌ No |
+| **OpenWeatherMap** (Fallback) | Air Pollution, Weather | ✅ Free API Key |
+
+- **Dual fallback**: If Open-Meteo fails for any zone, OpenWeatherMap automatically takes over
+- **5-minute cache**: Reduces API calls while keeping data fresh
+- **Per-zone independent fallback**: Each zone can use a different API source
+
+## 🏙️ Cities & Zones
+
+| City | Zones | Coverage |
+|------|-------|----------|
+| 🏛️ **Chennai** | 20 | Tondiarpet, Madhavaram, Perambur, Ambattur, Egmore, Nungambakkam, Kilpauk, Anna Nagar, Kodambakkam, T. Nagar, Mylapore, Adyar, Guindy, Velachery, Thiruvanmiyur, Porur, Valasaravakkam, Sholinganallur, Chromepet, Tambaram |
+| 🌊 **Mumbai** | 15 | Colaba, Bandra, Andheri, Borivali, Dadar, Kurla, Powai, Worli, Malad, Goregaon, Thane, Navi Mumbai, Vashi, Chembur, Kandivali |
+| 🏙️ **Delhi** | 15 | Connaught Place, Chandni Chowk, Saket, Dwarka, Rohini, Lajpat Nagar, Karol Bagh, Nehru Place, Janakpuri, Pitampura, Greater Kailash, Noida, Gurgaon, Vasant Kunj, Mayur Vihar |
+
+## 🧪 ML Models
+
+| Model | Purpose | Inputs |
+|-------|---------|--------|
+| **Weighted Ensemble** | Overall health risk score (0-100) | PM2.5, PM10, NO₂, O₃, SO₂, CO, AQI, Temperature |
+| **Logistic Regression** | Per-condition probability prediction | 6 pollutants → 6 health conditions |
+| **WHO Guideline Checker** | Compliance assessment | Live values vs WHO 2021 safe limits |
+| **LSTM (simulated)** | CO₂ time-series forecasting | Historical + current CO₂ |
+| **XGBoost (simulated)** | Short-term AQI prediction | Multi-pollutant features |
+| **Deep Q-Network** | Optimal sustainability strategy | Zone state → best actions |
 
 ## 🌐 Complete Module Breakdown
 
 | # | Module | Description |
 |---|--------|-------------|
-| 1 | **Urban Digital Twin** | Virtual model of Chennai with 5 zones — CO₂, AQI, risk levels |
-| 2 | **Data Fusion Engine** | Combines pollution, weather, traffic & population datasets |
-| 3 | **AI Prediction Engine** | LSTM/XGBoost CO₂ predictions — 1 hour, 24 hour, 7 day |
+| 1 | **Urban Digital Twin** | 3D Cesium.js globe — 50 zones, 3 cities, satellite imagery |
+| 2 | **Data Fusion Engine** | Merges live pollution, weather data from dual APIs |
+| 3 | **AI Prediction Engine** | LSTM/XGBoost CO₂ predictions — 1h, 24h, 7-day |
 | 4 | **Scenario Simulation** | Simulate: plant trees, add solar, increase traffic, add factory |
 | 5 | **RL Optimizer** | Deep Q-Network finds best sustainability strategy per zone |
 | 6 | **Multi-Agent AI** | 4 autonomous agents: Monitoring, Prediction, Optimization, Policy |
-| 7 | **Net-Zero Planner** | Generates year-by-year roadmap with 4 phases to Net-Zero |
-| 8 | **Renewable Energy Sim** | Simulates coal→solar, petrol→EV transitions |
-| 9 | **Sustainability Score** | Multi-factor 0–100 scoring per zone with grades |
-| 10 | **Carbon Credit Calculator** | Converts CO₂ reduction to ₹ / $ monetary value |
-| 11 | **Health Impact Predictor** | Population health risk assessment based on AQI/CO₂ |
-| 12 | **Policy Report Generator** | Government-ready comprehensive report |
-| 13 | **Alert System** | Multi-level threshold alerts (Critical / Warning / Info) |
+| 7 | **Net-Zero Planner** | Year-by-year roadmap with 4 phases to Net-Zero |
+| 8 | **Sustainability Score** | Multi-factor 0-100 scoring per zone with grades |
+| 9 | **Carbon Credit Calculator** | Converts CO₂ reduction to ₹ / $ value |
+| 10 | **Health Impact Predictor** | ML-powered: Logistic Regression + WHO compliance |
+| 11 | **Policy Report Generator** | Government-ready comprehensive report |
+| 12 | **Alert System** | Multi-level threshold alerts (Critical / Warning / Info) |
 
 ## 🖥️ Dashboard Features
 
 | Feature | Description |
 |---------|-------------|
 | 📊 **Overview Dashboard** | Key metrics, CO₂ charts, risk distribution, live alerts |
-| 🗺️ **Interactive Map** | Leaflet map of Chennai with colored zone markers |
+| 🌍 **3D Digital Twin** | Cesium.js globe with satellite imagery, city-switching, zone selection |
 | 📈 **Prediction Charts** | Area/line charts for hourly and weekly CO₂ forecasts |
 | 🎛️ **Scenario Simulator** | Interactive sliders to test sustainability actions |
 | 📅 **Net-Zero Timeline** | Phase-wise roadmap with progress indicators |
+| ❤️ **Health Dashboard** | ML risk scores, condition probabilities, WHO compliance |
 | 🕸️ **Radar Charts** | Multi-factor sustainability scoring per zone |
 | 💰 **Carbon Economics** | Pie charts and tables for carbon credit calculations |
-| ❤️ **Health Dashboard** | Population health risk cards with advisories |
 
 ## 🧰 Technology Stack
 
 | Layer | Technology |
 |-------|-----------|
-| **Frontend** | React 18, Vite, Recharts, Leaflet, React Router |
+| **Frontend** | React 18, Vite, Recharts, Cesium.js, React Router |
+| **3D Globe** | Cesium.js with Cesium Ion (satellite imagery + 3D terrain) |
 | **Backend** | Python 3.10+, FastAPI, Uvicorn |
-| **AI/ML** | Simulated LSTM, XGBoost, Deep Q-Network (DQN) |
-| **Data** | NumPy, Pandas, Synthetic Chennai zone data |
-| **Visualization** | Recharts (Bar, Line, Area, Pie, Radar), Leaflet Maps |
+| **Live Data** | Open-Meteo API, OpenWeatherMap API (dual fallback) |
+| **AI/ML** | NumPy, Logistic Regression, Weighted Ensemble, DQN |
+| **Visualization** | Recharts (Bar, Line, Area, Pie, Radar), Cesium.js 3D Globe |
 
 ## 🚀 Quick Start
 
@@ -106,6 +139,13 @@ Reinforcement Learning Optimizer ← DQN finds optimal strategy
 - Python 3.10+
 - Node.js 18+
 - npm
+
+### API Keys Needed
+| API | Required? | Get it at |
+|-----|-----------|-----------|
+| **Open-Meteo** | ❌ No key needed | — |
+| **OpenWeatherMap** | ✅ Free key | [openweathermap.org/api](https://openweathermap.org/api) |
+| **Cesium Ion** | ✅ Free key | [ion.cesium.com/signup](https://ion.cesium.com/signup) |
 
 ### 1. Clone the repository
 ```bash
@@ -119,7 +159,7 @@ cd backend
 pip install -r requirements.txt
 python -m uvicorn main:app --reload --port 8000
 ```
-Backend API will be available at `http://localhost:8000` (Swagger docs at `/docs`)
+Backend API at `http://localhost:8000` (Swagger docs at `/docs`)
 
 ### 3. Start the Frontend
 ```bash
@@ -127,7 +167,7 @@ cd frontend
 npm install
 npm run dev
 ```
-Frontend will be available at `http://localhost:5173`
+Frontend at `http://localhost:5173`
 
 ### 4. Open in Browser
 Navigate to **http://localhost:5173** to view the dashboard.
@@ -136,7 +176,8 @@ Navigate to **http://localhost:5173** to view the dashboard.
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/api/zones` | Digital twin zone data |
+| GET | `/api/cities` | List available cities |
+| GET | `/api/zones` | Digital twin zone data (optionally `?city=mumbai`) |
 | GET | `/api/data-fusion` | Unified environmental data |
 | GET | `/api/predictions` | AI CO₂ predictions |
 | POST | `/api/simulate` | Run scenario simulation |
@@ -146,38 +187,9 @@ Navigate to **http://localhost:5173** to view the dashboard.
 | GET | `/api/netzero` | Net-Zero roadmap |
 | GET | `/api/scores` | Sustainability scores |
 | GET | `/api/carbon-credits` | Carbon credit calculations |
-| GET | `/api/health` | Health impact predictions |
+| GET | `/api/health` | ML health impact predictions |
 | GET | `/api/report` | Policy report |
 | GET | `/api/alerts` | Active alerts |
-
-## 📊 Example Output
-
-| Metric | Value |
-|--------|-------|
-| Current CO₂ | 420 ppm |
-| Predicted (24h) | 460 ppm |
-| After Optimization | 350 ppm |
-| Carbon Credits | ₹10,000 |
-| Sustainability Score | 90 / 100 |
-
-## 🌱 Sustainability Impact
-
-- ✅ Climate action intelligence
-- ✅ Data-driven Net-Zero planning
-- ✅ Carbon reduction optimization
-- ✅ Smart city decision support
-- ✅ Health-aware environmental policy
-
-## 🏆 Innovation Highlights
-
-| Feature | Novelty Level |
-|---------|--------------|
-| Digital Twin | ⭐⭐⭐⭐⭐ Very High |
-| AI Prediction | ⭐⭐⭐⭐ High |
-| Reinforcement Learning | ⭐⭐⭐⭐⭐ Very High |
-| Multi-Agent System | ⭐⭐⭐⭐⭐ Very High |
-| Net-Zero Planning | ⭐⭐⭐⭐⭐ Extremely High |
-| Carbon Credits | ⭐⭐⭐⭐⭐ Rare |
 
 ## 📂 Project Structure
 
@@ -187,18 +199,19 @@ UrbanEcoTwin-NetZero/
 │   ├── main.py                    # FastAPI entry point
 │   ├── requirements.txt           # Python dependencies
 │   ├── data/
-│   │   └── city_data.py           # Synthetic Chennai zone data
+│   │   ├── city_data.py           # 50 zones across 3 cities (live data)
+│   │   └── live_data.py           # Open-Meteo + OpenWeatherMap client
 │   ├── modules/
 │   │   ├── digital_twin.py        # Urban Digital Twin
 │   │   ├── data_fusion.py         # Data Fusion Engine
 │   │   ├── prediction_engine.py   # AI Prediction Engine
 │   │   ├── scenario_simulation.py # Scenario Simulator
-│   │   ├── rl_optimizer.py        # RL Optimizer
+│   │   ├── rl_optimizer.py        # RL Optimizer (DQN)
 │   │   ├── multi_agent.py         # Multi-Agent AI System
 │   │   ├── netzero_planner.py     # Net-Zero Planning
 │   │   ├── sustainability_score.py# Sustainability Scoring
 │   │   ├── carbon_credits.py      # Carbon Credit Calculator
-│   │   ├── health_impact.py       # Health Impact Predictor
+│   │   ├── health_impact.py       # ML Health Impact Predictor
 │   │   ├── policy_report.py       # Policy Report Generator
 │   │   └── alerts.py              # Alert System
 │   └── routers/
@@ -211,24 +224,47 @@ UrbanEcoTwin-NetZero/
 │   │   ├── api/
 │   │   │   └── client.js          # API client
 │   │   ├── components/
-│   │   │   └── Sidebar.jsx        # Navigation sidebar
+│   │   │   ├── Sidebar.jsx        # Navigation sidebar
+│   │   │   └── CesiumCityView.jsx # 3D globe component
 │   │   └── pages/
 │   │       ├── Dashboard.jsx      # Overview dashboard
-│   │       ├── DigitalTwin.jsx    # Interactive map
-│   │       ├── Predictions.jsx    # AI predictions
+│   │       ├── DigitalTwin.jsx    # 3D Cesium globe
+│   │       ├── Predictions.jsx    # AI predictions (city→zone flow)
 │   │       ├── Simulation.jsx     # Scenario simulator
 │   │       ├── Optimize.jsx       # RL optimizer
 │   │       ├── Agents.jsx         # Multi-agent system
 │   │       ├── NetZero.jsx        # Net-Zero roadmap
 │   │       ├── Scores.jsx         # Sustainability scores
 │   │       ├── CarbonCredits.jsx  # Carbon credits
-│   │       ├── Health.jsx         # Health impact
+│   │       ├── Health.jsx         # ML health impact
 │   │       ├── Reports.jsx        # Policy reports
 │   │       └── Alerts.jsx         # Alert system
+│   ├── vite.config.js             # Vite + Cesium plugin
 │   └── package.json
 ├── context.md                     # Project specification
 └── README.md
 ```
+
+## 🌱 Sustainability Impact
+
+- ✅ Real-time environmental intelligence across 3 Indian metros
+- ✅ ML-powered health risk assessment with WHO compliance
+- ✅ Data-driven Net-Zero planning with carbon credit economics
+- ✅ Smart city decision support with scenario simulation
+- ✅ Health-aware environmental policy generation
+
+## 🏆 Innovation Highlights
+
+| Feature | Novelty |
+|---------|---------|
+| 3D Cesium Globe Digital Twin | ⭐⭐⭐⭐⭐ Very High |
+| Live Dual-API Data Pipeline | ⭐⭐⭐⭐⭐ Very High |
+| ML Health Impact (Logistic Regression) | ⭐⭐⭐⭐⭐ Very High |
+| Multi-City Coverage (50 zones) | ⭐⭐⭐⭐ High |
+| AI Prediction (LSTM + XGBoost) | ⭐⭐⭐⭐ High |
+| Reinforcement Learning Optimizer | ⭐⭐⭐⭐⭐ Very High |
+| Multi-Agent AI System | ⭐⭐⭐⭐⭐ Very High |
+| Net-Zero Roadmap + Carbon Credits | ⭐⭐⭐⭐⭐ Extremely High |
 
 ## 📜 License
 

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { api } from '../api/client';
 import {
   AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
@@ -52,7 +53,13 @@ export default function Dashboard() {
   return (
     <div className="fade-in">
       <div className="page-header">
-        <h1>UrbanEcoTwin Dashboard</h1>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <h1>UrbanEcoTwin Dashboard</h1>
+          <span className="live-badge live">
+            <span className="live-dot"></span>
+            Live Data
+          </span>
+        </div>
         <p>Real-time sustainability intelligence for Chennai Metropolitan Area</p>
       </div>
 
@@ -81,7 +88,7 @@ export default function Dashboard() {
             <div><div className="metric-label">Sustainability Score</div></div>
             <div className="metric-icon">⭐</div>
           </div>
-          <div className="metric-value">{cityScore}<span style={{fontSize: '16px', opacity: 0.5}}>/100</span></div>
+          <div className="metric-value">{cityScore}<span style={{ fontSize: '16px', opacity: 0.5 }}>/100</span></div>
           <div className="metric-change">Grade: {scores?.city_grade}</div>
         </div>
 
@@ -90,14 +97,14 @@ export default function Dashboard() {
             <div><div className="metric-label">Carbon Credits</div></div>
             <div className="metric-icon">💰</div>
           </div>
-          <div className="metric-value" style={{fontSize: '24px'}}>{credits?.city_totals?.total_credits_inr}</div>
+          <div className="metric-value" style={{ fontSize: '24px' }}>{credits?.city_totals?.total_credits_inr}</div>
           <div className="metric-change down">Potential earnings</div>
         </div>
       </div>
 
       {/* Charts Row */}
       <div className="card-grid-3">
-        <div className="card chart-card" style={{gridColumn: 'span 2'}}>
+        <div className="card chart-card" style={{ gridColumn: 'span 2' }}>
           <h3>CO₂ Levels by Zone</h3>
           <ResponsiveContainer width="100%" height={280}>
             <BarChart data={co2Data}>
@@ -138,8 +145,21 @@ export default function Dashboard() {
         </div>
       </div>
 
+      {/* 3D Digital Twin Preview */}
+      <Link to="/digital-twin" style={{ textDecoration: 'none' }}>
+        <div className="card" style={{ marginBottom: 24, cursor: 'pointer', border: '1px solid rgba(59.130,246,.15)', transition: 'all 0.3s ease' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+            <div style={{ fontSize: 40 }}>🌍</div>
+            <div>
+              <h3 style={{ marginBottom: 4, fontSize: 18 }}>3D Digital Twin</h3>
+              <p style={{ color: 'var(--text-muted)', fontSize: 14, margin: 0 }}>Explore the interactive Three.js 3D cityscape with live pollution data →</p>
+            </div>
+          </div>
+        </div>
+      </Link>
+
       {/* Sustainability Scores Bar Chart */}
-      <div className="card chart-card" style={{marginBottom: 24}}>
+      <div className="card chart-card" style={{ marginBottom: 24 }}>
         <h3>Sustainability Scores by Zone</h3>
         <ResponsiveContainer width="100%" height={250}>
           <BarChart data={scoreData}>
@@ -158,8 +178,8 @@ export default function Dashboard() {
 
       {/* Alerts */}
       {alerts && alerts.alerts.length > 0 && (
-        <div className="card" style={{marginBottom: 24}}>
-          <h3 style={{marginBottom: 16}}>🚨 Active Alerts ({alerts.total_alerts})</h3>
+        <div className="card" style={{ marginBottom: 24 }}>
+          <h3 style={{ marginBottom: 16 }}>🚨 Active Alerts ({alerts.total_alerts})</h3>
           {alerts.alerts.slice(0, 5).map((alert, i) => (
             <div key={i} className={`alert-item ${alert.severity}`}>
               <div className="alert-content">
