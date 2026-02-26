@@ -1,4 +1,5 @@
 import { useStateContext } from '../context/StateContext';
+import { Landmark, Trees, Building2, Ship, Leaf } from 'lucide-react';
 
 const STATE_CARDS = [
   {
@@ -6,7 +7,7 @@ const STATE_CARDS = [
     name: 'Tamil Nadu',
     capital: 'Chennai',
     districts: 38,
-    icon: '🏛️',
+    icon: <Landmark size={32} color="#f59e0b" />,
     color: '#f59e0b',
     gradient: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
     description: 'Land of Temples — 38 districts from Chennai to Thoothukudi',
@@ -16,7 +17,7 @@ const STATE_CARDS = [
     name: 'Kerala',
     capital: 'Thiruvananthapuram',
     districts: 14,
-    icon: '🌴',
+    icon: <Trees size={32} color="#22c55e" />,
     color: '#22c55e',
     gradient: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)',
     description: "God's Own Country — 14 districts from Kasaragod to Thiruvananthapuram",
@@ -26,7 +27,7 @@ const STATE_CARDS = [
     name: 'Karnataka',
     capital: 'Bengaluru',
     districts: 31,
-    icon: '🏙️',
+    icon: <Building2 size={32} color="#3b82f6" />,
     color: '#3b82f6',
     gradient: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
     description: 'Silicon Valley of India — 31 districts from Bengaluru to Bidar',
@@ -36,7 +37,7 @@ const STATE_CARDS = [
     name: 'Andhra Pradesh',
     capital: 'Amaravati',
     districts: 26,
-    icon: '⛵',
+    icon: <Ship size={32} color="#a855f7" />,
     color: '#a855f7',
     gradient: 'linear-gradient(135deg, #a855f7 0%, #7c3aed 100%)',
     description: 'Rice Bowl of India — 26 districts from Visakhapatnam to Anantapur',
@@ -53,24 +54,26 @@ export default function StateSelector() {
       flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'center',
-      background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)',
+      background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)',
       padding: '40px 20px',
     }}>
       {/* Header */}
-      <div style={{ textAlign: 'center', marginBottom: 48 }}>
-        <div style={{ fontSize: 48, marginBottom: 12 }}>🌍</div>
+      <div style={{ textAlign: 'center', marginBottom: 48, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <div style={{ marginBottom: 16, background: 'rgba(34,197,94,0.1)', padding: 16, borderRadius: '50%' }}>
+          <Leaf size={48} color="#22c55e" />
+        </div>
         <h1 style={{
           fontSize: 36,
           fontWeight: 800,
-          background: 'linear-gradient(135deg, #22c55e, #3b82f6)',
+          background: 'linear-gradient(135deg, #16a34a, #2563eb)',
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
           marginBottom: 8,
         }}>
           UrbanEcoTwin — NetZero
         </h1>
-        <p style={{ color: '#94a3b8', fontSize: 16 }}>
-          Select a state to monitor environmental data across its districts
+        <p style={{ color: '#64748b', fontSize: 16 }}>
+          Select a region to monitor environmental data across its districts
         </p>
       </div>
 
@@ -87,8 +90,8 @@ export default function StateSelector() {
             key={state.id}
             onClick={() => selectState(state.id)}
             style={{
-              background: 'rgba(255,255,255,0.04)',
-              border: '1px solid rgba(255,255,255,0.08)',
+              background: '#ffffff',
+              border: '1px solid rgba(0,0,0,0.05)',
               borderRadius: 16,
               padding: '32px 24px',
               cursor: 'pointer',
@@ -96,18 +99,17 @@ export default function StateSelector() {
               transition: 'all 0.3s ease',
               position: 'relative',
               overflow: 'hidden',
+              boxShadow: '0 4px 6px rgba(0,0,0,0.02)',
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = state.color;
-              e.currentTarget.style.background = 'rgba(255,255,255,0.08)';
+              e.currentTarget.style.borderColor = `${state.color}40`;
               e.currentTarget.style.transform = 'translateY(-4px)';
-              e.currentTarget.style.boxShadow = `0 12px 40px ${state.color}25`;
+              e.currentTarget.style.boxShadow = `0 12px 40px ${state.color}15`;
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)';
-              e.currentTarget.style.background = 'rgba(255,255,255,0.04)';
+              e.currentTarget.style.borderColor = 'rgba(0,0,0,0.05)';
               e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = 'none';
+              e.currentTarget.style.boxShadow = '0 4px 6px rgba(0,0,0,0.02)';
             }}
           >
             {/* Top accent bar */}
@@ -116,20 +118,20 @@ export default function StateSelector() {
               top: 0,
               left: 0,
               right: 0,
-              height: 3,
+              height: 4,
               background: state.gradient,
             }} />
 
-            <div style={{ fontSize: 40, marginBottom: 12 }}>{state.icon}</div>
-            <h2 style={{ fontSize: 22, fontWeight: 700, color: '#f1f5f9', marginBottom: 4 }}>
+            <div style={{ marginBottom: 16 }}>{state.icon}</div>
+            <h2 style={{ fontSize: 22, fontWeight: 700, color: '#0f172a', marginBottom: 4 }}>
               {state.name}
             </h2>
-            <p style={{ color: '#94a3b8', fontSize: 13, marginBottom: 16 }}>
+            <p style={{ color: '#64748b', fontSize: 13, marginBottom: 16 }}>
               {state.description}
             </p>
             <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
               <div style={{
-                background: `${state.color}15`,
+                background: `${state.color}10`,
                 borderRadius: 8,
                 padding: '6px 12px',
                 fontSize: 12,
@@ -139,11 +141,12 @@ export default function StateSelector() {
                 {state.districts} Districts
               </div>
               <div style={{
-                background: 'rgba(255,255,255,0.05)',
+                background: '#f1f5f9',
                 borderRadius: 8,
                 padding: '6px 12px',
                 fontSize: 12,
-                color: '#94a3b8',
+                color: '#64748b',
+                fontWeight: 500,
               }}>
                 Capital: {state.capital}
               </div>
@@ -153,7 +156,7 @@ export default function StateSelector() {
       </div>
 
       {/* Footer */}
-      <p style={{ color: '#475569', fontSize: 12, marginTop: 48 }}>
+      <p style={{ color: '#94a3b8', fontSize: 12, marginTop: 48 }}>
         Real-time data from Open-Meteo & OpenWeatherMap APIs
       </p>
     </div>
