@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react';
 import { api } from '../api/client';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import {
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  Cell, LineChart, Line, Legend
+} from 'recharts';
 
 export default function Simulation() {
   const [zones, setZones] = useState(null);
-  const [selectedZone, setSelectedZone] = useState('adyar');
+  const [selectedZone, setSelectedZone] = useState('chennai_adyar');
   const [actions, setActions] = useState({
     plant_trees: 0,
     add_solar_panels: 0,
@@ -15,6 +18,7 @@ export default function Simulation() {
   });
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [simulating, setSimulating] = useState(false);
 
   useEffect(() => {
     api.getZones().then(d => { setZones(d); setLoading(false); }).catch(() => setLoading(false));
@@ -25,7 +29,8 @@ export default function Simulation() {
       .filter(([_, qty]) => qty > 0)
       .map(([action, quantity]) => ({ action, quantity }));
     if (actionList.length === 0) return;
-    api.simulate(selectedZone, actionList).then(setResult);
+    setSimulating(true);
+    api.simulate(selectedZone, actionList).then(r => { setResult(r); setSimulating(false); });
   };
 
   if (loading) return <div className="loading"><div className="loading-spinner"></div><p>Loading simulator...</p></div>;
@@ -42,8 +47,11 @@ export default function Simulation() {
   return (
     <div className="fade-in">
       <div className="page-header">
-        <h1>🔬 Scenario Simulation Engine</h1>
-        <p>Test sustainability actions and see their CO₂ impact in real-time</p>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <h1>🔬 ML Scenario Simulation</h1>
+          <span className="live-badge live"><span className="live-dot"></span>Live Data</span>
+        </div>
+        <p>ML-powered impact prediction — actions adjusted by live environmental conditions</p>
       </div>
 
       <div className="card-grid-3">
@@ -52,9 +60,9 @@ export default function Simulation() {
 
           <div style={{ marginBottom: 16 }}>
             <label style={{ fontSize: 13, color: 'var(--text-muted)', display: 'block', marginBottom: 6 }}>Select Zone</label>
-            <select value={selectedZone} onChange={e => setSelectedZone(e.target.value)} style={{ width: '100%' }}>
+            <select value={selectedZone} onChange={e => { setSelectedZone(e.target.value); setResult(null); }} style={{ width: '100%' }}>
               {zones?.zones.map(z => (
-                <option key={z.id} value={z.id}>{z.name}</option>
+                <option key={z.id} value={z.id}>{z.name} ({z.city})</option>
               ))}
             </select>
           </div>
@@ -78,22 +86,17 @@ export default function Simulation() {
 
           <button
             onClick={runSimulation}
+            disabled={simulating}
             style={{
-              width: '100%',
-              padding: '14px',
-              background: 'var(--gradient-primary)',
-              border: 'none',
-              borderRadius: 'var(--radius-sm)',
-              color: 'white',
-              fontSize: 15,
-              fontWeight: 700,
-              cursor: 'pointer',
-              marginTop: 8,
-              transition: 'var(--transition)',
-              fontFamily: 'Inter',
+              width: '100%', padding: '14px',
+              background: simulating ? '#475569' : 'var(--gradient-primary)',
+              border: 'none', borderRadius: 'var(--radius-sm)',
+              color: 'white', fontSize: 15, fontWeight: 700,
+              cursor: simulating ? 'wait' : 'pointer',
+              marginTop: 8, transition: 'var(--transition)', fontFamily: 'Inter',
             }}
           >
-            🚀 Run Simulation
+            {simulating ? '⏳ Running ML Model...' : '🚀 Run Simulation'}
           </button>
         </div>
 
@@ -102,20 +105,35 @@ export default function Simulation() {
           {!result ? (
             <div style={{ textAlign: 'center', padding: 60, color: 'var(--text-muted)' }}>
               <div style={{ fontSize: 48, marginBottom: 16 }}>🔬</div>
-              <p>Configure actions and click "Run Simulation" to see results</p>
+              <p>Configure actions and click "Run Simulation" to see ML-predicted results</p>
+              <p style={{ fontSize: 12, marginTop: 8 }}>Impact will be adjusted based on live temperature, humidity, AQI, and pollutants</p>
             </div>
           ) : (
             <>
+              {/* Model & Environment Info */}
+              <div style={{
+                padding: '10px 14px', borderRadius: 8, marginBottom: 16,
+                background: 'rgba(59,130,246,0.06)', border: '1px solid rgba(59,130,246,0.15)',
+                fontSize: 12, color: '#94a3b8',
+              }}>
+                <strong style={{ color: '#60a5fa' }}>🧠 Model:</strong> {result.model_info?.name} •
+                <strong style={{ color: '#60a5fa' }}> Data:</strong> {result.env_conditions?.api_source} •
+                <strong style={{ color: '#60a5fa' }}> Conditions:</strong> {result.env_conditions?.temperature_c?.toFixed(1)}°C,
+                {' '}{result.env_conditions?.humidity_pct}% humidity,
+                AQI {result.env_conditions?.current_aqi}
+              </div>
+
+              {/* Metric cards */}
               <div className="card-grid">
                 <div className="card metric-card orange" style={{ background: 'rgba(249,115,22,0.05)' }}>
                   <div className="metric-label">Original CO₂</div>
                   <div className="metric-value">{result.original_co2_ppm}</div>
-                  <div className="metric-change">ppm (before)</div>
+                  <div className="metric-change">ppm (live reading)</div>
                 </div>
                 <div className="card metric-card green" style={{ background: 'rgba(34,197,94,0.05)' }}>
-                  <div className="metric-label">New CO₂</div>
+                  <div className="metric-label">Predicted CO₂</div>
                   <div className="metric-value">{result.new_co2_ppm}</div>
-                  <div className="metric-change down">ppm (after simulation)</div>
+                  <div className="metric-change down">ppm (ML prediction)</div>
                 </div>
                 <div className="card metric-card blue" style={{ background: 'rgba(59,130,246,0.05)' }}>
                   <div className="metric-label">CO₂ Reduction</div>
@@ -124,15 +142,83 @@ export default function Simulation() {
                 </div>
               </div>
 
+              {/* Action Impact with ML details */}
               {result.action_results?.length > 0 && (
                 <>
-                  <h4 style={{ marginTop: 16, marginBottom: 12, fontSize: 14 }}>Action Impact Breakdown</h4>
-                  <ResponsiveContainer width="100%" height={250}>
+                  <h4 style={{ marginTop: 20, marginBottom: 12, fontSize: 14 }}>
+                    ML-Adjusted Action Impact
+                  </h4>
+
+                  {/* Table with modifiers */}
+                  <div style={{ overflowX: 'auto', marginBottom: 16 }}>
+                    <table className="data-table" style={{ width: '100%' }}>
+                      <thead>
+                        <tr>
+                          <th>Action</th>
+                          <th>Qty</th>
+                          <th>Base Rate</th>
+                          <th>Env Modifier</th>
+                          <th>Adjusted Rate</th>
+                          <th>CO₂ Change</th>
+                          <th>Confidence</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {result.action_results.map((a, i) => (
+                          <tr key={i}>
+                            <td style={{ fontWeight: 600 }}>{a.label}</td>
+                            <td>{a.quantity.toLocaleString()} {a.unit}</td>
+                            <td>{a.base_rate}</td>
+                            <td>
+                              <span style={{
+                                fontWeight: 700,
+                                color: a.env_modifier > 1 ? '#22c55e' : a.env_modifier < 1 ? '#f97316' : '#94a3b8',
+                              }}>
+                                ×{a.env_modifier}
+                              </span>
+                            </td>
+                            <td>{a.adjusted_rate}</td>
+                            <td style={{ color: a.co2_change_ppm >= 0 ? '#22c55e' : '#ef4444', fontWeight: 700 }}>
+                              {a.co2_change_ppm >= 0 ? `−${a.co2_change_ppm}` : `+${Math.abs(a.co2_change_ppm)}`} ppm
+                            </td>
+                            <td>
+                              <span style={{
+                                padding: '2px 8px', borderRadius: 4, fontSize: 11, fontWeight: 600,
+                                background: a.confidence_pct > 80 ? 'rgba(34,197,94,0.15)' : a.confidence_pct > 60 ? 'rgba(234,179,8,0.15)' : 'rgba(239,68,68,0.15)',
+                                color: a.confidence_pct > 80 ? '#22c55e' : a.confidence_pct > 60 ? '#eab308' : '#ef4444',
+                              }}>
+                                {a.confidence_pct}%
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* Modifier explanations */}
+                  <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 16 }}>
+                    {result.action_results.map((a, i) => (
+                      <div key={i} style={{
+                        fontSize: 11, padding: '4px 10px', borderRadius: 6,
+                        background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)',
+                        color: '#94a3b8',
+                      }}>
+                        <strong>{a.label}:</strong> {a.modifier_explanation}
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Bar Chart */}
+                  <ResponsiveContainer width="100%" height={220}>
                     <BarChart data={result.action_results} layout="vertical">
-                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.05)" />
                       <XAxis type="number" stroke="#64748b" fontSize={12} />
                       <YAxis type="category" dataKey="label" stroke="#64748b" fontSize={12} width={140} />
-                      <Tooltip contentStyle={{ background: '#1e293b', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10, color: '#f1f5f9' }} />
+                      <Tooltip
+                        contentStyle={{ background: '#ffffff', border: '1px solid rgba(0,0,0,0.1)', borderRadius: 10, color: '#0f172a' }}
+                        formatter={(v, name) => [`${v} ppm`, 'CO₂ Change']}
+                      />
                       <Bar dataKey="co2_change_ppm" radius={[0, 6, 6, 0]}>
                         {result.action_results.map((entry, i) => (
                           <Cell key={i} fill={entry.co2_change_ppm >= 0 ? '#22c55e' : '#ef4444'} />
@@ -141,6 +227,27 @@ export default function Simulation() {
                     </BarChart>
                   </ResponsiveContainer>
                 </>
+              )}
+
+              {/* Implementation Timeline */}
+              {result.implementation_timeline && (
+                <div style={{ marginTop: 24 }}>
+                  <h4 style={{ marginBottom: 12, fontSize: 14 }}>📅 Implementation Timeline (12 months)</h4>
+                  <ResponsiveContainer width="100%" height={240}>
+                    <LineChart data={result.implementation_timeline}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.05)" />
+                      <XAxis dataKey="month" stroke="#64748b" fontSize={12} label={{ value: 'Month', position: 'insideBottom', offset: -5 }} />
+                      <YAxis stroke="#64748b" fontSize={12} />
+                      <Tooltip
+                        contentStyle={{ background: '#ffffff', border: '1px solid rgba(0,0,0,0.1)', borderRadius: 10, color: '#0f172a' }}
+                        formatter={(v, name) => [name === 'co2_ppm' ? `${v} ppm` : `${v}%`, name === 'co2_ppm' ? 'Predicted CO₂' : 'Impact Realized']}
+                      />
+                      <Legend />
+                      <Line type="monotone" dataKey="co2_ppm" name="CO₂ (ppm)" stroke="#3b82f6" strokeWidth={2.5} dot={false} />
+                      <Line type="monotone" dataKey="realized_pct" name="Impact %" stroke="#22c55e" strokeWidth={2} dot={false} strokeDasharray="5 5" />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
               )}
             </>
           )}

@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { api } from '../api/client';
 import {
-  LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
-  ResponsiveContainer, Legend
+  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
+  ResponsiveContainer, Legend, BarChart, Bar, Cell
 } from 'recharts';
+import { BrainCircuit, Cpu, GitMerge, Activity, Search } from 'lucide-react';
 
 const CITY_LABELS = { chennai: '🏛️ Chennai', mumbai: '🌊 Mumbai', delhi: '🏙️ Delhi' };
 
@@ -14,20 +15,22 @@ export default function Predictions() {
   const [loading, setLoading] = useState(false);
   const [cities, setCities] = useState([]);
 
-  // Load available cities
   useEffect(() => {
     api.getCities().then(d => setCities(d.cities)).catch(() => { });
   }, []);
 
-  // When city is selected, fetch predictions
   useEffect(() => {
     if (!selectedCity) { setData(null); setSelectedZone(null); return; }
     setLoading(true);
     setSelectedZone(null);
     api.getPredictions().then(d => {
-      // Filter predictions to the selected city
       const filtered = d.predictions.filter(p => p.zone_id.startsWith(selectedCity));
       setData({ ...d, predictions: filtered });
+
+      // Auto-select the first zone
+      if (filtered.length > 0) {
+        setSelectedZone(filtered[0].zone_id);
+      }
       setLoading(false);
     }).catch(() => setLoading(false));
   }, [selectedCity]);
@@ -40,8 +43,10 @@ export default function Predictions() {
     return (
       <div className="fade-in">
         <div className="page-header">
-          <h1>🤖 AI Prediction Engine</h1>
-          <p>Select a city to view CO₂ forecasts powered by LSTM & XGBoost models</p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <h1><BrainCircuit size={28} style={{ color: '#3b82f6' }} /> Advanced AI Predictions</h1>
+          </div>
+          <p>Powered by LightGBM, XGBoost, Stacking Ensembles, and Reinforcement Learning</p>
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20, marginTop: 24 }}>
@@ -50,13 +55,7 @@ export default function Predictions() {
               key={city.id}
               className="card"
               onClick={() => setSelectedCity(city.id)}
-              style={{
-                cursor: 'pointer',
-                textAlign: 'center',
-                padding: '40px 24px',
-                transition: 'all 0.3s ease',
-                border: '1px solid rgba(255,255,255,0.06)',
-              }}
+              style={{ cursor: 'pointer', textAlign: 'center', padding: '40px 24px', transition: 'all 0.3s ease', border: '1px solid rgba(255,255,255,0.06)' }}
               onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.borderColor = '#3b82f6'; }}
               onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)'; }}
             >
@@ -64,20 +63,7 @@ export default function Predictions() {
                 {city.id === 'chennai' ? '🏛️' : city.id === 'mumbai' ? '🌊' : '🏙️'}
               </div>
               <h2 style={{ fontSize: 24, fontWeight: 700, marginBottom: 8 }}>{city.name}</h2>
-              <p style={{ color: 'var(--text-muted)', fontSize: 14 }}>
-                View AI predictions for {city.name} zones
-              </p>
-              <div style={{
-                marginTop: 16,
-                padding: '8px 20px',
-                background: 'linear-gradient(135deg, #3b82f6, #8b5cf6)',
-                borderRadius: 8,
-                display: 'inline-block',
-                fontSize: 13,
-                fontWeight: 600,
-              }}>
-                Select City →
-              </div>
+              <p style={{ color: 'var(--text-muted)', fontSize: 14 }}>View AI predictions for {city.name} zones</p>
             </div>
           ))}
         </div>
@@ -85,160 +71,186 @@ export default function Predictions() {
     );
   }
 
-  // ── Step 2: Zone Selection (after city chosen) ──────────────────
-  if (loading) return <div className="loading"><div className="loading-spinner"></div><p>Loading predictions for {CITY_LABELS[selectedCity]}...</p></div>;
-  if (!data) return <div className="loading"><p>Failed to load data.</p></div>;
+  // ── Step 2: Zone Selection & Details Layout ─────────────────────
+  if (loading) return <div className="loading"><div className="loading-spinner"></div><p>Loading advanced ML predictions for {CITY_LABELS[selectedCity]}...</p></div>;
+  if (!data || predictions.length === 0) return <div className="loading"><p>No prediction data available.</p></div>;
 
   return (
-    <div className="fade-in">
-      <div className="page-header">
+    <div className="fade-in" style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 40px)' }}>
+      {/* Header spanning full width */}
+      <div className="page-header" style={{ marginBottom: 20 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <button
-            onClick={() => setSelectedCity(null)}
-            style={{
-              background: 'rgba(255,255,255,0.06)',
-              border: '1px solid rgba(255,255,255,0.1)',
-              borderRadius: 8,
-              padding: '6px 14px',
-              color: '#94a3b8',
-              cursor: 'pointer',
-              fontSize: 13,
-            }}
-          >
-            ← Back
-          </button>
-          <h1>🤖 {CITY_LABELS[selectedCity]} Predictions</h1>
+          <button onClick={() => setSelectedCity(null)} style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(0,0,0,0.1)', borderRadius: 8, padding: '6px 14px', color: '#94a3b8', cursor: 'pointer', fontSize: 13 }}>← Change City</button>
+          <h1 style={{ margin: 0 }}>{CITY_LABELS[selectedCity]} Predictions</h1>
         </div>
-        <p>LSTM & XGBoost-powered CO₂ forecasting — {predictions.length} zones • Models: {data.models_used?.join(', ')}</p>
+        <div style={{ display: 'flex', gap: 16, marginTop: 12 }}>
+          <span className="badge" style={{ background: 'rgba(59,130,246,0.1)', color: '#60a5fa' }}><Cpu size={14} style={{ marginRight: 4 }} /> {data.pipeline.primary_model} + {data.pipeline.secondary_model}</span>
+          <span className="badge" style={{ background: 'rgba(168,85,247,0.1)', color: '#c084fc' }}><GitMerge size={14} style={{ marginRight: 4 }} /> {data.pipeline.meta_learner}</span>
+          <span className="badge" style={{ background: 'rgba(34,197,94,0.1)', color: '#4ade80' }}><Activity size={14} style={{ marginRight: 4 }} /> {data.pipeline.optimization_layer}</span>
+        </div>
       </div>
 
-      {/* Zone selector */}
-      {!selectedZone ? (
-        <>
-          <h3 style={{ marginBottom: 16, fontSize: 16, color: 'var(--text-muted)' }}>Select a zone to view predictions</h3>
-          <div className="card-grid">
-            {predictions.map(p => (
-              <div
-                className="card zone-card"
-                key={p.zone_id}
-                onClick={() => setSelectedZone(p.zone_id)}
-                style={{
-                  cursor: 'pointer',
-                  borderLeft: `3px solid ${p.risk_trend === 'increasing' ? '#f97316' : '#22c55e'}`,
-                  transition: 'all 0.25s ease',
-                }}
-                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; }}
-                onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; }}
-              >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-                  <h3 style={{ fontSize: 15, fontWeight: 700 }}>{p.zone_name}</h3>
-                  <span className={`badge ${p.risk_trend === 'increasing' ? 'warning' : 'low'}`}>{p.risk_trend}</span>
-                </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-                  <div>
-                    <div style={{ fontSize: 10, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Current CO₂</div>
-                    <div style={{ fontSize: 18, fontWeight: 700 }}>{p.current_co2_ppm} ppm</div>
+      {/* Two-column layout container */}
+      <div style={{ display: 'flex', gap: 24, flex: 1, minHeight: 0 }}>
+
+        {/* Left Sidebar: Zone List */}
+        <div style={{
+          width: '320px',
+          flexShrink: 0,
+          display: 'flex',
+          flexDirection: 'column',
+          background: 'rgba(255,255,255,0.02)',
+          border: '1px solid rgba(0,0,0,0.05)',
+          borderRadius: 'var(--radius-lg)',
+          overflow: 'hidden'
+        }}>
+          <div style={{ padding: '16px', borderBottom: '1px solid rgba(0,0,0,0.05)', background: 'rgba(0,0,0,0.2)' }}>
+            <h3 style={{ margin: 0, fontSize: 14, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Regions Monitored ({predictions.length})</h3>
+          </div>
+
+          <div style={{ overflowY: 'auto', flex: 1, padding: '12px', display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {predictions.map(p => {
+              const isSelected = selectedZone === p.zone_id;
+              return (
+                <div
+                  key={p.zone_id}
+                  onClick={() => setSelectedZone(p.zone_id)}
+                  style={{
+                    cursor: 'pointer',
+                    padding: '12px 16px',
+                    borderRadius: '8px',
+                    borderLeft: `4px solid ${p.risk_trend === 'increasing' ? '#f97316' : '#22c55e'}`,
+                    background: isSelected ? 'rgba(59,130,246,0.1)' : 'rgba(255,255,255,0.03)',
+                    border: isSelected ? '1px solid rgba(59,130,246,0.3)' : '1px solid transparent',
+                    borderLeftColor: p.risk_trend === 'increasing' ? '#f97316' : '#22c55e',
+                    transition: 'all 0.2s ease'
+                  }}
+                  onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; }}
+                  onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = 'rgba(255,255,255,0.03)'; }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                    <h4 style={{ fontSize: 14, fontWeight: isSelected ? 700 : 500, margin: 0, color: isSelected ? '#fff' : '#e2e8f0' }}>{p.zone_name}</h4>
+                    <span style={{ fontSize: 10, padding: '2px 6px', borderRadius: '4px', background: p.risk_trend === 'increasing' ? 'rgba(249,115,22,0.15)' : 'rgba(34,197,94,0.15)', color: p.risk_trend === 'increasing' ? '#f97316' : '#22c55e', whiteSpace: 'nowrap' }}>
+                      {p.risk_trend === 'increasing' ? 'Rising ↗' : 'Declining ↘'}
+                    </span>
                   </div>
-                  <div>
-                    <div style={{ fontSize: 10, color: 'var(--text-muted)', textTransform: 'uppercase' }}>24h Prediction</div>
-                    <div style={{ fontSize: 18, fontWeight: 700, color: '#3b82f6' }}>{p.predictions['24_hour']?.predicted_co2_ppm} ppm</div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12 }}>
+                    <span style={{ color: 'var(--text-muted)' }}>CO₂: <strong style={{ color: '#475569' }}>{p.current_co2_ppm}</strong></span>
+                    <span style={{ color: 'var(--text-muted)' }}>+24h: <strong style={{ color: '#3b82f6' }}>{p.predictions['24_hour']?.predicted_co2_ppm}</strong></span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Right Main Content: Data & Visualizations */}
+        <div style={{ flex: 1, overflowY: 'auto', paddingRight: '8px', paddingBottom: '20px' }}>
+          {current ? (
+            <div className="fade-in">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
+                <div>
+                  <h2 style={{ fontSize: 28, fontWeight: 800, margin: '0 0 4px 0' }}>{current.zone_name}</h2>
+                  <p style={{ margin: 0, color: 'var(--text-muted)' }}>Advanced AI Forecast & Spatial Analysis</p>
+                </div>
+                <div style={{ textAlign: 'right', background: 'rgba(255,255,255,0.03)', padding: '12px 16px', borderRadius: '8px', border: '1px solid rgba(0,0,0,0.05)' }}>
+                  <div style={{ fontSize: 11, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: 4 }}>Spatial Lag (Neighbor Bleed)</div>
+                  <div style={{ fontSize: 22, fontWeight: 700, color: current.spatial_lag_impact > 0 ? '#ef4444' : '#22c55e' }}>
+                    {current.spatial_lag_impact > 0 ? '+' : ''}{current.spatial_lag_impact} <span style={{ fontSize: 14 }}>ppm</span>
                   </div>
                 </div>
               </div>
-            ))}
-          </div>
-        </>
-      ) : (
-        /* ── Step 3: Zone Details ─────────────────────────── */
-        <>
-          <div style={{ marginBottom: 20 }}>
-            <button
-              onClick={() => setSelectedZone(null)}
-              style={{
-                background: 'rgba(255,255,255,0.06)',
-                border: '1px solid rgba(255,255,255,0.1)',
-                borderRadius: 8,
-                padding: '6px 14px',
-                color: '#94a3b8',
-                cursor: 'pointer',
-                fontSize: 13,
-              }}
-            >
-              ← All Zones
-            </button>
-          </div>
 
-          {/* Prediction Cards */}
-          <div className="card-grid">
-            <div className="card metric-card green">
-              <div className="metric-header">
-                <div><div className="metric-label">Current CO₂</div></div>
-                <div className="metric-icon">📊</div>
-              </div>
-              <div className="metric-value">{current?.current_co2_ppm}</div>
-              <div className="metric-change">ppm (live reading)</div>
-            </div>
-            <div className="card metric-card blue">
-              <div className="metric-header">
-                <div><div className="metric-label">1 Hour Prediction</div></div>
-                <div className="metric-icon">⏱️</div>
-              </div>
-              <div className="metric-value">{current?.predictions['1_hour']?.predicted_co2_ppm}</div>
-              <div className="metric-change up">+{current?.predictions['1_hour']?.change_ppm} ppm • {(current?.predictions['1_hour']?.confidence * 100).toFixed(0)}% confidence</div>
-            </div>
-            <div className="card metric-card orange">
-              <div className="metric-header">
-                <div><div className="metric-label">24 Hour Prediction</div></div>
-                <div className="metric-icon">📅</div>
-              </div>
-              <div className="metric-value">{current?.predictions['24_hour']?.predicted_co2_ppm}</div>
-              <div className="metric-change up">+{current?.predictions['24_hour']?.change_ppm} ppm • {(current?.predictions['24_hour']?.confidence * 100).toFixed(0)}% confidence</div>
-            </div>
-            <div className="card metric-card purple">
-              <div className="metric-header">
-                <div><div className="metric-label">7 Day Prediction</div></div>
-                <div className="metric-icon">📈</div>
-              </div>
-              <div className="metric-value">{current?.predictions['7_day']?.predicted_co2_ppm}</div>
-              <div className="metric-change up">+{current?.predictions['7_day']?.change_ppm} ppm • Trend: {current?.risk_trend}</div>
-            </div>
-          </div>
+              {/* Prediction Cards */}
+              <div className="card-grid" style={{ marginBottom: 24 }}>
+                <div className="card metric-card blue" style={{ background: 'rgba(59,130,246,0.05)', borderTop: '3px solid #3b82f6' }}>
+                  <div className="metric-label">1-Hour Prediction (Stacking)</div>
+                  <div className="metric-value">{current.predictions['1_hour']?.predicted_co2_ppm} <span style={{ fontSize: 16, color: 'var(--text-muted)' }}>ppm</span></div>
+                  <div className="metric-change up" style={{ color: '#ef4444' }}>+{current.predictions['1_hour']?.change_ppm} ppm increase</div>
+                </div>
 
-          {/* Hourly Forecast Chart */}
-          <div className="card chart-card" style={{ marginTop: 24, marginBottom: 24 }}>
-            <h3>24-Hour CO₂ Forecast — {current?.zone_name}</h3>
-            <ResponsiveContainer width="100%" height={300}>
-              <AreaChart data={current?.hourly_forecast}>
-                <defs>
-                  <linearGradient id="hourlyGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#22c55e" stopOpacity={0.4} />
-                    <stop offset="100%" stopColor="#22c55e" stopOpacity={0.05} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-                <XAxis dataKey="hour_offset" stroke="#64748b" fontSize={12} label={{ value: 'Hours', position: 'insideBottom', offset: -5 }} />
-                <YAxis stroke="#64748b" fontSize={12} />
-                <Tooltip contentStyle={{ background: '#1e293b', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10, color: '#f1f5f9' }} />
-                <Area type="monotone" dataKey="predicted_co2_ppm" stroke="#22c55e" fill="url(#hourlyGrad)" strokeWidth={2} dot={false} />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
+                <div className="card metric-card green" style={{ background: 'rgba(34,197,94,0.05)', borderTop: '3px solid #22c55e' }}>
+                  <div className="metric-label">RL-Optimized Outcome (1hr)</div>
+                  <div className="metric-value" style={{ color: '#22c55e' }}>{current.predictions['1_hour']?.rl_optimized_co2_ppm} <span style={{ fontSize: 16, color: 'var(--text-muted)' }}>ppm</span></div>
+                  <div className="metric-change down" style={{ color: '#22c55e' }}>
+                    {current.predictions['1_hour']?.rl_action}
+                  </div>
+                </div>
 
-          {/* 7-Day Forecast */}
-          <div className="card chart-card">
-            <h3>7-Day CO₂ Trend — {current?.zone_name}</h3>
-            <ResponsiveContainer width="100%" height={280}>
-              <LineChart data={current?.daily_forecast}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-                <XAxis dataKey="day_offset" stroke="#64748b" fontSize={12} label={{ value: 'Days', position: 'insideBottom', offset: -5 }} />
-                <YAxis stroke="#64748b" fontSize={12} />
-                <Tooltip contentStyle={{ background: '#1e293b', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10, color: '#f1f5f9' }} />
-                <Line type="monotone" dataKey="predicted_co2_ppm" stroke="#3b82f6" strokeWidth={2.5} dot={{ fill: '#3b82f6', r: 4 }} />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        </>
-      )}
+                <div className="card metric-card purple" style={{ background: 'rgba(168,85,247,0.05)', borderTop: '3px solid #a855f7' }}>
+                  <div className="metric-label">24-Hour Prediction (Stacking)</div>
+                  <div className="metric-value">{current.predictions['24_hour']?.predicted_co2_ppm} <span style={{ fontSize: 16, color: 'var(--text-muted)' }}>ppm</span></div>
+                  <div className="metric-change up" style={{ color: '#ef4444' }}>+{current.predictions['24_hour']?.change_ppm} ppm • {current.risk_trend}</div>
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 2fr) minmax(0, 1fr)', gap: 24 }}>
+                {/* ML vs RL Chart */}
+                <div className="card chart-card">
+                  <h3 style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <Activity size={18} color="#3b82f6" /> 24-Hour CO₂ Forecast: Raw ML vs RL Policy
+                  </h3>
+                  <p style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 20 }}>
+                    Comparing the base Stacking Ensemble (LightGBM+XGBoost) against the Deep Q-Network active intervention policy.
+                  </p>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <AreaChart data={current.hourly_forecast} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                      <defs>
+                        <linearGradient id="rawCo2" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#ef4444" stopOpacity={0.3} />
+                          <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
+                        </linearGradient>
+                        <linearGradient id="rlCo2" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#22c55e" stopOpacity={0.3} />
+                          <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.05)" />
+                      <XAxis dataKey="hour_offset" stroke="#64748b" fontSize={11} tickMargin={8} />
+                      <YAxis stroke="#64748b" fontSize={11} domain={['auto', 'auto']} />
+                      <Tooltip contentStyle={{ background: '#ffffff', border: '1px solid rgba(0,0,0,0.1)', borderRadius: 10, color: '#0f172a' }} />
+                      <Legend verticalAlign="top" height={36} iconType="circle" wrapperStyle={{ fontSize: '12px' }} />
+                      <Area type="monotone" dataKey="raw_co2_ppm" name="ML Prediction" stroke="#ef4444" fillOpacity={1} fill="url(#rawCo2)" strokeWidth={2} />
+                      <Area type="monotone" dataKey="rl_optimized_co2_ppm" name="RL Optimized Policy" stroke="#22c55e" fillOpacity={1} fill="url(#rlCo2)" strokeWidth={2} />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+
+                {/* SHAP Explainability */}
+                <div className="card chart-card">
+                  <h3 style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <Search size={18} color="#c084fc" /> ML Explainability (SHAP)
+                  </h3>
+                  <p style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 20 }}>
+                    Feature impact on ensemble output.
+                  </p>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <BarChart data={current.shap_values} layout="vertical" margin={{ left: 50, right: 10, top: 0, bottom: 0 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.05)" />
+                      <XAxis type="number" stroke="#64748b" fontSize={11} />
+                      <YAxis dataKey="feature" type="category" stroke="#64748b" fontSize={11} width={130} />
+                      <Tooltip
+                        contentStyle={{ background: '#ffffff', border: '1px solid rgba(0,0,0,0.1)', borderRadius: 10, color: '#0f172a' }}
+                        formatter={(v, name, props) => [`${v > 0 ? '+' : ''}${v.toFixed(1)} ppm`, 'Impact on Prediction']}
+                      />
+                      <Bar dataKey="shap_value" radius={[0, 4, 4, 0]} barSize={24}>
+                        {current.shap_values.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.shap_value >= 0 ? '#ef4444' : '#22c55e'} />
+                        ))}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--text-muted)' }}>
+              <BrainCircuit size={64} opacity={0.2} style={{ marginBottom: 16 }} />
+              <p>Select a zone from the sidebar to view advanced AI predictions</p>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

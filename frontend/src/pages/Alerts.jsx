@@ -46,6 +46,9 @@ export default function Alerts() {
               <p>{alert.message}</p>
               <p style={{ marginTop: 6, fontSize: 12, color: alert.color, fontWeight: 500 }}>💡 {alert.recommended_action}</p>
               <div className="alert-meta">
+                <span style={{ display: 'block', marginBottom: 6, color: '#475569', fontWeight: 500 }}>
+                  🕒 {new Date(alert.timestamp).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })}
+                </span>
                 Zone: {alert.zone_name} • Type: {alert.type} • Value: {alert.value} (threshold: {alert.threshold})
               </div>
             </div>

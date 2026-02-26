@@ -49,8 +49,8 @@ export default function Health() {
           <button key={opt.id} onClick={() => { setSelectedCity(opt.id); setSelectedZone(null); }}
             style={{
               padding: '6px 16px', borderRadius: 8, fontSize: 13, cursor: 'pointer',
-              border: selectedCity === opt.id ? '1px solid #3b82f6' : '1px solid rgba(255,255,255,0.08)',
-              background: selectedCity === opt.id ? 'rgba(59,130,246,0.15)' : 'rgba(255,255,255,0.04)',
+              border: selectedCity === opt.id ? '1px solid #3b82f6' : '1px solid rgba(0,0,0,0.08)',
+              background: selectedCity === opt.id ? 'rgba(59,130,246,0.15)' : 'rgba(0,0,0,0.04)',
               color: selectedCity === opt.id ? '#60a5fa' : '#94a3b8',
               fontWeight: selectedCity === opt.id ? 600 : 400,
             }}
@@ -129,10 +129,10 @@ export default function Health() {
               <h4 style={{ fontSize: 14, marginBottom: 12, color: 'var(--text-muted)' }}>📊 Pollutant Levels vs WHO Limits</h4>
               <ResponsiveContainer width="100%" height={250}>
                 <BarChart data={current.pollutant_data} layout="vertical">
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.05)" />
                   <XAxis type="number" stroke="#64748b" fontSize={11} />
                   <YAxis type="category" dataKey="name" stroke="#64748b" fontSize={11} width={80} />
-                  <Tooltip contentStyle={{ background: '#1e293b', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10, color: '#f1f5f9' }} />
+                  <Tooltip contentStyle={{ background: '#ffffff', border: '1px solid rgba(0,0,0,0.1)', borderRadius: 10, color: '#0f172a' }} />
                   <Bar dataKey="normalized" name="Risk %" radius={[0, 4, 4, 0]}>
                     {current.pollutant_data?.map((entry, idx) => (
                       <Cell key={idx} fill={entry.normalized > 75 ? '#ef4444' : entry.normalized > 50 ? '#f97316' : entry.normalized > 25 ? '#eab308' : '#22c55e'} />

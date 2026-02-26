@@ -12,9 +12,9 @@ import 'cesium/Build/Cesium/Widgets/widgets.css';
 
 // ── City Camera Positions ──────────────────────────────────────────
 const CITY_CAMERA = {
-    chennai: { lng: 80.22, lat: 13.03, alt: 45000 },
-    mumbai: { lng: 72.88, lat: 19.08, alt: 50000 },
-    delhi: { lng: 77.21, lat: 28.61, alt: 55000 },
+    chennai: { lng: 80.20, lat: 13.04, alt: 35000 },
+    mumbai: { lng: 72.86, lat: 19.06, alt: 35000 },
+    delhi: { lng: 77.15, lat: 28.60, alt: 35000 },
     '': { lng: 78.96, lat: 20.59, alt: 3000000 }, // All India view
 };
 
@@ -61,24 +61,15 @@ export default function CesiumCityView({ zones, selectedZoneId, onSelectZone, se
         });
 
         // Dark mode styling
-        viewer.scene.backgroundColor = Cesium.Color.fromCssColorString('#0a0f1a');
-        viewer.scene.globe.baseColor = Cesium.Color.fromCssColorString('#0a0f1a');
+        viewer.scene.backgroundColor = Cesium.Color.fromCssColorString('#f8fafc');
+        viewer.scene.globe.baseColor = Cesium.Color.fromCssColorString('#f8fafc');
         viewer.scene.fog.enabled = true;
         viewer.scene.globe.enableLighting = true;
 
         // Remove credit display clutter
         viewer.cesiumWidget.creditContainer.style.display = 'none';
 
-        // Fly to Chennai
-        viewer.camera.flyTo({
-            destination: Cesium.Cartesian3.fromDegrees(80.22, 13.03, 45000),
-            orientation: {
-                heading: Cesium.Math.toRadians(0),
-                pitch: Cesium.Math.toRadians(-45),
-                roll: 0,
-            },
-            duration: 2,
-        });
+        // Wait to fly until data loads (handled in another useEffect)
 
         // Click handler
         const handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
@@ -157,7 +148,7 @@ export default function CesiumCityView({ zones, selectedZoneId, onSelectZone, se
                     pixelOffset: new Cesium.Cartesian2(0, -10),
                     disableDepthTestDistance: Number.POSITIVE_INFINITY,
                     showBackground: true,
-                    backgroundColor: Cesium.Color.fromCssColorString('#0a0f1a').withAlpha(0.8),
+                    backgroundColor: Cesium.Color.fromCssColorString('#ffffff').withAlpha(0.85),
                     backgroundPadding: new Cesium.Cartesian2(8, 5),
                 },
             });
@@ -204,22 +195,69 @@ export default function CesiumCityView({ zones, selectedZoneId, onSelectZone, se
         });
     }, [selectedZoneId, zones]);
 
-    // ── Fly to city when city selector changes ────────────────────
+    // ── Fly to city when city selector changes or initial load ────
+    const lastFlownCityRef = useRef(null);
+
     useEffect(() => {
         const viewer = viewerRef.current;
-        if (!viewer) return;
+        if (!viewer || !zones || zones.length === 0) return;
 
-        const cam = CITY_CAMERA[selectedCity] || CITY_CAMERA[''];
-        viewer.camera.flyTo({
-            destination: Cesium.Cartesian3.fromDegrees(cam.lng, cam.lat, cam.alt),
-            orientation: {
-                heading: Cesium.Math.toRadians(0),
-                pitch: Cesium.Math.toRadians(-45),
-                roll: 0,
-            },
-            duration: 2,
-        });
-    }, [selectedCity]);
+        // Ensure we only trigger the city flyTo when the user actually changes the city
+        // (or on the very first load)
+        if (lastFlownCityRef.current === selectedCity) return;
+        lastFlownCityRef.current = selectedCity;
+
+        // If a specific city is selected, fly to it
+        if (selectedCity) {
+            const cam = CITY_CAMERA[selectedCity];
+            if (cam) {
+                viewer.camera.flyTo({
+                    destination: Cesium.Cartesian3.fromDegrees(cam.lng, cam.lat, cam.alt),
+                    orientation: {
+                        heading: Cesium.Math.toRadians(0),
+                        pitch: Cesium.Math.toRadians(-45),
+                        roll: 0,
+                    },
+                    duration: 2,
+                });
+            }
+        }
+        // If NO selection (All Cities), find the absolute worst zone and zoom to it
+        else if (selectedCity === '') {
+            // Find the zone with the highest AQI
+            const worstZone = [...zones].sort((a, b) => b.current_aqi - a.current_aqi)[0];
+
+            if (worstZone) {
+                // Determine which city this zone belongs to (or just fly directly to the zone but pulled back a bit)
+                viewer.camera.flyTo({
+                    destination: Cesium.Cartesian3.fromDegrees(worstZone.lng, worstZone.lat, 40000),
+                    orientation: {
+                        heading: Cesium.Math.toRadians(0),
+                        pitch: Cesium.Math.toRadians(-45),
+                        roll: 0,
+                    },
+                    duration: 2.5,
+                });
+
+                // Auto-select it so the detail card opens up
+                if (!selectedZoneId) {
+                    onSelectZone(worstZone.id);
+                }
+            } else {
+                // Fallback India view
+                const cam = CITY_CAMERA[''];
+                viewer.camera.flyTo({
+                    destination: Cesium.Cartesian3.fromDegrees(cam.lng, cam.lat, cam.alt),
+                    orientation: {
+                        heading: Cesium.Math.toRadians(0),
+                        pitch: Cesium.Math.toRadians(-90),
+                        roll: 0,
+                    },
+                    duration: 2,
+                });
+            }
+        }
+    }, [selectedCity, zones, selectedZoneId, onSelectZone]);
 
     return (
         <div style={{ position: 'relative', width: '100%', height: '100%' }}>
@@ -240,7 +278,7 @@ export default function CesiumCityView({ zones, selectedZoneId, onSelectZone, se
                         position: 'absolute',
                         left: tooltipInfo.x + 15,
                         top: tooltipInfo.y - 10,
-                        background: 'rgba(10, 15, 26, 0.92)',
+                        background: 'rgba(255, 255, 255, 0.92)',
                         border: `1px solid ${tooltipInfo.zone.risk_color || '#3b82f6'}`,
                         borderRadius: 10,
                         padding: '10px 14px',
@@ -250,7 +288,7 @@ export default function CesiumCityView({ zones, selectedZoneId, onSelectZone, se
                         backdropFilter: 'blur(8px)',
                     }}
                 >
-                    <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 6, color: '#f1f5f9' }}>
+                    <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 6, color: '#0f172a' }}>
                         {tooltipInfo.zone.name}
                     </div>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px 16px', fontSize: 12 }}>
@@ -263,7 +301,7 @@ export default function CesiumCityView({ zones, selectedZoneId, onSelectZone, se
                             {tooltipInfo.zone.current_co2_ppm} ppm
                         </span>
                         <span style={{ color: '#94a3b8' }}>Temp</span>
-                        <span style={{ fontWeight: 600, color: '#f1f5f9' }}>
+                        <span style={{ fontWeight: 600, color: '#0f172a' }}>
                             {tooltipInfo.zone.avg_temperature_c?.toFixed(1)}°C
                         </span>
                         <span style={{ color: '#94a3b8' }}>Risk</span>

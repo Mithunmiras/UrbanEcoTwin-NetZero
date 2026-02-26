@@ -10,22 +10,21 @@ const COLORS = ['#22c55e', '#3b82f6', '#f97316', '#a855f7', '#eab308'];
 
 export default function Dashboard() {
   const [zones, setZones] = useState(null);
-  const [predictions, setPredictions] = useState(null);
   const [scores, setScores] = useState(null);
   const [credits, setCredits] = useState(null);
   const [alerts, setAlerts] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const [selectedRiskCategory, setSelectedRiskCategory] = useState(null);
+
   useEffect(() => {
     Promise.all([
       api.getZones(),
-      api.getPredictions(),
       api.getScores(),
       api.getCarbonCredits(),
       api.getAlerts(),
-    ]).then(([z, p, s, c, a]) => {
+    ]).then(([z, s, c, a]) => {
       setZones(z);
-      setPredictions(p);
       setScores(s);
       setCredits(c);
       setAlerts(a);
@@ -49,6 +48,62 @@ export default function Dashboard() {
     { name: 'Low', value: zones.zones.filter(z => z.risk_level === 'Low').length },
   ].filter(d => d.value > 0);
   const riskColors = { Critical: '#ef4444', High: '#f97316', Medium: '#eab308', Low: '#22c55e' };
+
+  // ── Drill-down View for Risk Category ──────────────────────────────────
+  if (selectedRiskCategory) {
+    const categoryZones = zones.zones.filter(z => z.risk_level === selectedRiskCategory);
+    const color = riskColors[selectedRiskCategory];
+
+    return (
+      <div className="fade-in">
+        <div className="page-header" style={{ marginBottom: 24 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <button
+              onClick={() => setSelectedRiskCategory(null)}
+              style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(0,0,0,0.1)', borderRadius: 8, padding: '6px 14px', color: '#94a3b8', cursor: 'pointer', fontSize: 13 }}
+            >
+              ← Back to Dashboard
+            </button>
+            <h1 style={{ color: color }}>
+              {selectedRiskCategory} Risk Zones
+            </h1>
+          </div>
+          <p>{categoryZones.length} regions currently classified as {selectedRiskCategory} risk.</p>
+        </div>
+
+        <div className="card-grid">
+          {categoryZones.map(z => (
+            <div key={z.id} className="card zone-card" style={{ borderLeft: `3px solid ${color}` }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                <h3 style={{ fontSize: 18, fontWeight: 700, margin: 0 }}>{z.name}</h3>
+                <span className="badge" style={{ background: color + '20', color: color }}>
+                  {z.risk_level}
+                </span>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <div>
+                  <div style={{ fontSize: 11, color: 'var(--text-muted)', textTransform: 'uppercase' }}>AQI</div>
+                  <div style={{ fontSize: 18, fontWeight: 700 }}>{z.current_aqi}</div>
+                </div>
+                <div>
+                  <div style={{ fontSize: 11, color: 'var(--text-muted)', textTransform: 'uppercase' }}>CO₂ Levels</div>
+                  <div style={{ fontSize: 18, fontWeight: 700 }}>{z.current_co2_ppm} ppm</div>
+                </div>
+                <div>
+                  <div style={{ fontSize: 11, color: 'var(--text-muted)', textTransform: 'uppercase' }}>PM 2.5</div>
+                  <div style={{ fontSize: 18, fontWeight: 700 }}>{z.pm2_5} µg/m³</div>
+                </div>
+                <div>
+                  <div style={{ fontSize: 11, color: 'var(--text-muted)', textTransform: 'uppercase' }}>City</div>
+                  <div style={{ fontSize: 16, fontWeight: 500 }}>{z.city ? z.city.charAt(0).toUpperCase() + z.city.slice(1) : 'Unknown'}</div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="fade-in">
@@ -105,14 +160,14 @@ export default function Dashboard() {
       {/* Charts Row */}
       <div className="card-grid-3">
         <div className="card chart-card" style={{ gridColumn: 'span 2' }}>
-          <h3>CO₂ Levels by Zone</h3>
+          <h3 className="text-heading">CO₂ Levels by Zone</h3>
           <ResponsiveContainer width="100%" height={280}>
             <BarChart data={co2Data}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.05)" />
               <XAxis dataKey="name" stroke="#64748b" fontSize={12} />
               <YAxis stroke="#64748b" fontSize={12} />
               <Tooltip
-                contentStyle={{ background: '#1e293b', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10, color: '#f1f5f9' }}
+                contentStyle={{ background: '#ffffff', border: '1px solid rgba(0,0,0,0.1)', borderRadius: 10, color: '#0f172a' }}
               />
               <Bar dataKey="co2" fill="url(#co2Gradient)" radius={[6, 6, 0, 0]} />
               <defs>
@@ -126,20 +181,51 @@ export default function Dashboard() {
         </div>
 
         <div className="card chart-card">
-          <h3>Risk Distribution</h3>
+          <h3 className="text-heading">Risk Distribution</h3>
+          <p style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: -10, marginBottom: 10 }}>Click a segment to view specific zones</p>
           <ResponsiveContainer width="100%" height={280}>
             <PieChart>
-              <Pie data={riskData} cx="50%" cy="50%" outerRadius={90} innerRadius={55} dataKey="value" paddingAngle={4}>
+              <Pie
+                data={riskData}
+                cx="50%"
+                cy="50%"
+                outerRadius={90}
+                innerRadius={55}
+                dataKey="value"
+                paddingAngle={4}
+                style={{ cursor: 'pointer' }}
+                onClick={(data) => {
+                  const categoryName = data?.name || data?.payload?.name;
+                  if (categoryName) {
+                    setSelectedRiskCategory(categoryName);
+                  }
+                }}
+              >
                 {riskData.map((entry, i) => (
-                  <Cell key={i} fill={riskColors[entry.name]} />
+                  <Cell
+                    key={i}
+                    fill={riskColors[entry.name]}
+                    style={{ outline: 'none', cursor: 'pointer' }}
+                  />
                 ))}
               </Pie>
-              <Tooltip contentStyle={{ background: '#1e293b', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10, color: '#f1f5f9' }} />
+              <Tooltip
+                contentStyle={{ background: '#ffffff', border: '1px solid rgba(0,0,0,0.1)', borderRadius: 10, color: '#0f172a' }}
+                itemStyle={{ color: '#0f172a' }}
+              />
             </PieChart>
           </ResponsiveContainer>
           <div style={{ display: 'flex', justifyContent: 'center', gap: 16, flexWrap: 'wrap' }}>
             {riskData.map((d, i) => (
-              <span key={i} style={{ fontSize: 12, color: riskColors[d.name] }}>● {d.name} ({d.value})</span>
+              <span
+                key={i}
+                style={{ fontSize: 12, color: riskColors[d.name], cursor: 'pointer', padding: '4px 8px', borderRadius: '4px', border: '1px solid transparent', transition: 'all 0.2s' }}
+                onClick={() => setSelectedRiskCategory(d.name)}
+                onMouseEnter={e => e.currentTarget.style.background = 'rgba(0,0,0,0.05)'}
+                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+              >
+                ● {d.name} ({d.value})
+              </span>
             ))}
           </div>
         </div>
@@ -147,12 +233,12 @@ export default function Dashboard() {
 
       {/* 3D Digital Twin Preview */}
       <Link to="/digital-twin" style={{ textDecoration: 'none' }}>
-        <div className="card" style={{ marginBottom: 24, cursor: 'pointer', border: '1px solid rgba(59.130,246,.15)', transition: 'all 0.3s ease' }}>
+        <div className="card" style={{ marginBottom: 24, cursor: 'pointer', border: '1px solid rgba(59.130,246,.15)', transition: 'all 0.4s ease' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
             <div style={{ fontSize: 40 }}>🌍</div>
             <div>
-              <h3 style={{ marginBottom: 4, fontSize: 18 }}>3D Digital Twin</h3>
-              <p style={{ color: 'var(--text-muted)', fontSize: 14, margin: 0 }}>Explore the interactive Three.js 3D cityscape with live pollution data →</p>
+              <h3 className="text-gradient" style={{ marginBottom: 4, fontSize: 20 }}>Interactive 3D Digital Twin</h3>
+              <p style={{ color: 'var(--text-muted)', fontSize: 14, margin: 0 }}>Explore the immersive Three.js spatial view with live climate modeling →</p>
             </div>
           </div>
         </div>
@@ -160,13 +246,13 @@ export default function Dashboard() {
 
       {/* Sustainability Scores Bar Chart */}
       <div className="card chart-card" style={{ marginBottom: 24 }}>
-        <h3>Sustainability Scores by Zone</h3>
+        <h3 className="text-heading">Sustainability Scores by Zone</h3>
         <ResponsiveContainer width="100%" height={250}>
           <BarChart data={scoreData}>
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+            <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.05)" />
             <XAxis dataKey="name" stroke="#64748b" fontSize={12} />
             <YAxis stroke="#64748b" fontSize={12} domain={[0, 100]} />
-            <Tooltip contentStyle={{ background: '#1e293b', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10, color: '#f1f5f9' }} />
+            <Tooltip contentStyle={{ background: '#ffffff', border: '1px solid rgba(0,0,0,0.1)', borderRadius: 10, color: '#0f172a' }} />
             <Bar dataKey="score" radius={[6, 6, 0, 0]}>
               {scoreData.map((entry, i) => (
                 <Cell key={i} fill={entry.score >= 65 ? '#22c55e' : entry.score >= 45 ? '#eab308' : '#ef4444'} />
@@ -179,7 +265,14 @@ export default function Dashboard() {
       {/* Alerts */}
       {alerts && alerts.alerts.length > 0 && (
         <div className="card" style={{ marginBottom: 24 }}>
-          <h3 style={{ marginBottom: 16 }}>🚨 Active Alerts ({alerts.total_alerts})</h3>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+            <h3 style={{ margin: 0 }}>🚨 Active Alerts ({alerts.total_alerts})</h3>
+            {alerts.total_alerts > 5 && (
+              <Link to="/alerts" style={{ background: '#3b82f6', color: '#0f172a', padding: '6px 12px', borderRadius: '6px', textDecoration: 'none', fontSize: 13, fontWeight: 500, transition: 'background 0.2s' }}>
+                View All {alerts.total_alerts} Alerts →
+              </Link>
+            )}
+          </div>
           {alerts.alerts.slice(0, 5).map((alert, i) => (
             <div key={i} className={`alert-item ${alert.severity}`}>
               <div className="alert-content">

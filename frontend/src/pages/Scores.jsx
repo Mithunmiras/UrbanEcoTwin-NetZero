@@ -49,10 +49,10 @@ export default function Scores() {
 
               <ResponsiveContainer width="100%" height={220}>
                 <RadarChart data={radarData}>
-                  <PolarGrid stroke="rgba(255,255,255,0.08)" />
+                  <PolarGrid stroke="rgba(0,0,0,0.08)" />
                   <PolarAngleAxis dataKey="factor" stroke="#64748b" fontSize={10} />
                   <Radar dataKey="score" stroke="#22c55e" fill="#22c55e" fillOpacity={0.15} strokeWidth={2} />
-                  <Tooltip contentStyle={{ background: '#1e293b', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10, color: '#f1f5f9' }} />
+                  <Tooltip contentStyle={{ background: '#ffffff', border: '1px solid rgba(0,0,0,0.1)', borderRadius: 10, color: '#0f172a' }} />
                 </RadarChart>
               </ResponsiveContainer>
 

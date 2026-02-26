@@ -34,10 +34,10 @@ export default function Optimize() {
 
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={zone.all_strategies} layout="vertical">
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.05)" />
               <XAxis type="number" stroke="#64748b" fontSize={12} />
               <YAxis type="category" dataKey="strategy_name" stroke="#64748b" fontSize={11} width={160} />
-              <Tooltip contentStyle={{ background: '#1e293b', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10, color: '#f1f5f9' }} />
+              <Tooltip contentStyle={{ background: '#ffffff', border: '1px solid rgba(0,0,0,0.1)', borderRadius: 10, color: '#0f172a' }} />
               <Bar dataKey="reduction_pct" radius={[0, 6, 6, 0]}>
                 {zone.all_strategies.map((s, i) => (
                   <Cell key={i} fill={i === 0 ? '#22c55e' : '#3b82f6'} fillOpacity={i === 0 ? 1 : 0.5} />
