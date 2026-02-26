@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { api } from '../api/client';
-import { Target } from 'lucide-react';
+import { Target, CalendarDays, Building } from 'lucide-react';
 
 export default function NetZero() {
   const [data, setData] = useState(null);
@@ -47,7 +47,9 @@ export default function NetZero() {
 
       {/* Timeline */}
       <div className="card" style={{ marginBottom: 24 }}>
-        <h3 style={{ marginBottom: 24 }}>📅 Phase-wise Roadmap</h3>
+        <h3 style={{ marginBottom: 24, display: 'flex', alignItems: 'center', gap: 8 }}>
+          <CalendarDays size={20} color="#64748b" /> Phase-wise Roadmap
+        </h3>
         <div className="timeline">
           {data.milestones?.map((m, i) => (
             <div key={i} className={`timeline-item ${m.status}`}>
@@ -71,7 +73,9 @@ export default function NetZero() {
 
       {/* Zone Targets */}
       <div className="card">
-        <h3 style={{ marginBottom: 16 }}>🏙️ Zone-Specific Net-Zero Targets</h3>
+        <h3 style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
+          <Building size={20} color="#64748b" /> Zone-Specific Net-Zero Targets
+        </h3>
         <table className="data-table">
           <thead>
             <tr>

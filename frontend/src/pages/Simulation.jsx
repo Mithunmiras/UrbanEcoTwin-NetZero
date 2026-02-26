@@ -49,7 +49,7 @@ export default function Simulation() {
     <div className="fade-in">
       <div className="page-header">
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <h1><Microscope size={28} style={{ color: '#3b82f6', marginBottom: -4 }} /> ML Scenario Simulation</h1>
+          <h1>Scenario Simulation</h1>
           <span className="live-badge live"><span className="live-dot"></span>Live Data</span>
         </div>
       </div>
