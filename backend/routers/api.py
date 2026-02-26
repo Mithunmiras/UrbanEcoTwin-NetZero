@@ -3,6 +3,8 @@ API Router — All REST endpoints for UrbanEcoTwin-NetZero.
 """
 
 import json
+import hashlib
+import secrets
 try:
     import numpy as np
     _HAS_NUMPY = True
@@ -10,7 +12,7 @@ except ImportError:
     _HAS_NUMPY = False
     np = None
 
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Query, HTTPException
 from pydantic import BaseModel
 from typing import List, Optional
 
@@ -30,7 +32,18 @@ from modules.alerts import get_alerts
 router = APIRouter(prefix="/api")
 
 
+# --- Admin credentials (username: admin, password: admin123) ---
+ADMIN_USERNAME = "admin"
+ADMIN_PASSWORD_HASH = hashlib.sha256("admin123".encode()).hexdigest()
+_active_tokens: dict[str, str] = {}  # token -> username
+
+
 # --- Request Models ---
+class LoginRequest(BaseModel):
+    username: str
+    password: str
+
+
 class ActionItem(BaseModel):
     action: str
     quantity: int
@@ -39,6 +52,32 @@ class ActionItem(BaseModel):
 class SimulationRequest(BaseModel):
     zone_id: str
     actions: List[ActionItem]
+
+
+# --- Auth Endpoint ---
+@router.post("/auth/login")
+def api_login(req: LoginRequest):
+    """Authenticate admin user and return a session token."""
+    password_hash = hashlib.sha256(req.password.encode()).hexdigest()
+    if req.username == ADMIN_USERNAME and password_hash == ADMIN_PASSWORD_HASH:
+        token = secrets.token_hex(32)
+        _active_tokens[token] = req.username
+        return {
+            "success": True,
+            "token": token,
+            "user": {
+                "username": ADMIN_USERNAME,
+                "role": "admin",
+                "name": "Admin",
+            },
+        }
+    raise HTTPException(status_code=401, detail="Invalid username or password")
+
+
+@router.post("/auth/logout")
+def api_logout():
+    """Logout (client-side token removal)."""
+    return {"success": True, "message": "Logged out"}
 
 
 # --- Endpoints ---

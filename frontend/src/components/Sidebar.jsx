@@ -1,7 +1,8 @@
 import { NavLink } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import {
   LayoutDashboard, Globe, BrainCircuit, FlaskConical, Cpu,
-  Target, Star, Coins, Wallet, HeartPulse, FileText, Bell
+  Target, Star, Coins, Wallet, HeartPulse, FileText, Bell, LogOut
 } from 'lucide-react';
 
 const navItems = [
@@ -22,6 +23,8 @@ const navItems = [
 ];
 
 export default function Sidebar() {
+  const { user, logout } = useAuth();
+
   return (
     <aside className="sidebar">
       <div className="sidebar-logo">
@@ -48,6 +51,19 @@ export default function Sidebar() {
           )
         )}
       </nav>
+      <div className="sidebar-footer">
+        <div className="sidebar-user">
+          <div className="sidebar-user-avatar">🛡️</div>
+          <div className="sidebar-user-info">
+            <span className="sidebar-user-name">{user?.name || 'Admin'}</span>
+            <span className="sidebar-user-role">{user?.role || 'admin'}</span>
+          </div>
+        </div>
+        <button className="sidebar-logout-btn" onClick={logout} title="Sign Out">
+          <LogOut size={16} />
+          <span>Sign Out</span>
+        </button>
+      </div>
     </aside>
   );
 }

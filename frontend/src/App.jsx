@@ -1,5 +1,7 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import Sidebar from './components/Sidebar';
+import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import DigitalTwin from './pages/DigitalTwin';
 import Predictions from './pages/Predictions';
@@ -14,29 +16,53 @@ import Reports from './pages/Reports';
 import Alerts from './pages/Alerts';
 import './index.css';
 
+function ProtectedRoutes() {
+  const { isAuthenticated, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="auth-loading">
+        <div className="auth-loading-spinner"></div>
+        <p>Initializing Eco Platform…</p>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <Login />;
+  }
+
+  return (
+    <div className="app-layout">
+      <Sidebar />
+      <main className="main-content">
+        <Routes>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/digital-twin" element={<DigitalTwin />} />
+          <Route path="/predictions" element={<Predictions />} />
+          <Route path="/simulation" element={<Simulation />} />
+          <Route path="/optimize" element={<Optimize />} />
+          <Route path="/netzero" element={<NetZero />} />
+          <Route path="/scores" element={<Scores />} />
+          <Route path="/carbon-credits" element={<CarbonCredits />} />
+          <Route path="/budget-constraint" element={<BudgetConstraint />} />
+          <Route path="/health" element={<Health />} />
+          <Route path="/reports" element={<Reports />} />
+          <Route path="/alerts" element={<Alerts />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </main>
+    </div>
+  );
+}
+
 function App() {
   return (
-    <BrowserRouter>
-      <div className="app-layout">
-        <Sidebar />
-        <main className="main-content">
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/digital-twin" element={<DigitalTwin />} />
-            <Route path="/predictions" element={<Predictions />} />
-            <Route path="/simulation" element={<Simulation />} />
-            <Route path="/optimize" element={<Optimize />} />
-            <Route path="/netzero" element={<NetZero />} />
-            <Route path="/scores" element={<Scores />} />
-            <Route path="/carbon-credits" element={<CarbonCredits />} />
-            <Route path="/budget-constraint" element={<BudgetConstraint />} />
-            <Route path="/health" element={<Health />} />
-            <Route path="/reports" element={<Reports />} />
-            <Route path="/alerts" element={<Alerts />} />
-          </Routes>
-        </main>
-      </div>
-    </BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
+        <ProtectedRoutes />
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 
