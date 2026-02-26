@@ -12,9 +12,9 @@ CREDIT_RATE_PER_TONNE_USD = 6    # $6 per tonne (approximate)
 CO2_PPM_TO_TONNES_FACTOR = 7.82  # Conversion factor (city-scale approximation)
 
 
-def calculate_carbon_credits(zone_id: str = None, reduction_ppm: float = None):
+def calculate_carbon_credits(zone_id: str = None, reduction_ppm: float = None, state: str = None):
     """Calculate carbon credits for CO₂ reduction."""
-    zones = get_all_zones()
+    zones = get_all_zones(state=state)
     if zone_id:
         zones = [z for z in zones if z["id"] == zone_id]
 

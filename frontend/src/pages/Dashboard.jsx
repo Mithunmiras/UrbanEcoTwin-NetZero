@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../api/client';
+import { useStateContext } from '../context/StateContext';
 import {
   AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, PieChart, Pie, Cell
@@ -10,6 +11,7 @@ import { Leaf, Wind, Activity, CircleDollarSign, Globe, AlertTriangle } from 'lu
 const COLORS = ['#22c55e', '#3b82f6', '#f97316', '#a855f7', '#eab308'];
 
 export default function Dashboard() {
+  const { selectedState, stateName } = useStateContext();
   const [zones, setZones] = useState(null);
   const [scores, setScores] = useState(null);
   const [credits, setCredits] = useState(null);
@@ -20,11 +22,12 @@ export default function Dashboard() {
   const [selectedCityScore, setSelectedCityScore] = useState('All');
 
   useEffect(() => {
+    setLoading(true);
     Promise.all([
-      api.getZones(),
-      api.getScores(),
-      api.getCarbonCredits(),
-      api.getAlerts(),
+      api.getZones(undefined, selectedState),
+      api.getScores(selectedState),
+      api.getCarbonCredits(undefined, selectedState),
+      api.getAlerts(selectedState),
     ]).then(([z, s, c, a]) => {
       setZones(z);
       setScores(s);
@@ -32,7 +35,7 @@ export default function Dashboard() {
       setAlerts(a);
       setLoading(false);
     }).catch(() => setLoading(false));
-  }, []);
+  }, [selectedState]);
 
   if (loading) return <div className="loading"><div className="loading-spinner"></div><p>Loading dashboard...</p></div>;
   if (!zones) return <div className="loading"><p>Failed to connect to API. Make sure backend is running on port 8000.</p></div>;

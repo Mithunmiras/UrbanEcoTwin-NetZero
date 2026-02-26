@@ -26,9 +26,9 @@ RISK_COLORS = {
 }
 
 
-def get_digital_twin(city=None):
+def get_digital_twin(city=None, state=None):
     """Returns the full digital twin state for all zones."""
-    zones = get_all_zones(city=city)
+    zones = get_all_zones(city=city, state=state)
     twin_data = []
     for zone in zones:
         risk = classify_risk(zone["current_co2_ppm"], zone["current_aqi"])
@@ -57,7 +57,7 @@ def get_digital_twin(city=None):
             "factories": zone.get("factories"),
         })
     return {
-        "city": "Chennai",
+        "state": state or "all",
         "total_zones": len(twin_data),
         "timestamp": __import__("datetime").datetime.now().isoformat(),
         "zones": twin_data,

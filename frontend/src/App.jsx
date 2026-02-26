@@ -1,7 +1,9 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { StateProvider, useStateContext } from './context/StateContext';
 import Sidebar from './components/Sidebar';
 import Login from './pages/Login';
+import StateSelector from './pages/StateSelector';
 import Dashboard from './pages/Dashboard';
 import DigitalTwin from './pages/DigitalTwin';
 import Predictions from './pages/Predictions';
@@ -18,6 +20,7 @@ import './index.css';
 
 function ProtectedRoutes() {
   const { isAuthenticated, loading } = useAuth();
+  const { selectedState } = useStateContext();
 
   if (loading) {
     return (
@@ -30,6 +33,10 @@ function ProtectedRoutes() {
 
   if (!isAuthenticated) {
     return <Login />;
+  }
+
+  if (!selectedState) {
+    return <StateSelector />;
   }
 
   return (
@@ -59,9 +66,11 @@ function ProtectedRoutes() {
 function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <ProtectedRoutes />
-      </BrowserRouter>
+      <StateProvider>
+        <BrowserRouter>
+          <ProtectedRoutes />
+        </BrowserRouter>
+      </StateProvider>
     </AuthProvider>
   );
 }

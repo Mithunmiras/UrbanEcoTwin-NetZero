@@ -41,9 +41,9 @@ def _get_grade(score):
         return "F"
 
 
-def get_sustainability_scores():
+def get_sustainability_scores(state=None):
     """Calculate sustainability scores for all zones."""
-    zones = get_all_zones()
+    zones = get_all_zones(state=state)
     scores = []
 
     for zone in zones:
@@ -73,7 +73,7 @@ def get_sustainability_scores():
     city_avg = round(sum(s["sustainability_score"] for s in scores) / len(scores), 1)
 
     return {
-        "city": "Chennai",
+        "state": state or "all",
         "city_average_score": city_avg,
         "city_grade": _get_grade(city_avg),
         "zone_scores": sorted(scores, key=lambda x: x["sustainability_score"], reverse=True),

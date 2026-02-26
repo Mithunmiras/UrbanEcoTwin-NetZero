@@ -1,5 +1,11 @@
 const API_BASE = 'http://localhost:8000/api';
 
+function _qs(params) {
+  const entries = Object.entries(params).filter(([, v]) => v != null && v !== '');
+  if (!entries.length) return '';
+  return '?' + entries.map(([k, v]) => `${k}=${encodeURIComponent(v)}`).join('&');
+}
+
 async function fetchAPI(endpoint) {
   const res = await fetch(`${API_BASE}${endpoint}`);
   if (!res.ok) throw new Error(`API error: ${res.status}`);
@@ -17,17 +23,21 @@ async function postAPI(endpoint, body) {
 }
 
 export const api = {
-  getCities: () => fetchAPI('/cities'),
-  getZones: (city) => fetchAPI(`/zones${city ? `?city=${city}` : ''}`),
-  getDataFusion: () => fetchAPI('/data-fusion'),
-  getPredictions: (zoneId) => fetchAPI(`/predictions${zoneId ? `?zone_id=${zoneId}` : ''}`),
+  getStates: () => fetchAPI('/states'),
+  getCities: (state) => fetchAPI(`/cities${_qs({ state })}`),
+  getZones: (city, state) => fetchAPI(`/zones${_qs({ city, state })}`),
+  getDataFusion: (state) => fetchAPI(`/data-fusion${_qs({ state })}`),
+  getPredictions: (zoneId, state) => fetchAPI(`/predictions${_qs({ zone_id: zoneId, state })}`),
   simulate: (zoneId, actions) => postAPI('/simulate', { zone_id: zoneId, actions }),
   getAvailableActions: () => fetchAPI('/simulate/actions'),
-  getOptimize: (zoneId, budgetCr) => fetchAPI(`/optimize${zoneId ? `?zone_id=${zoneId}` : ''}${budgetCr ? `${zoneId ? '&' : '?'}budget_inr=${Number(budgetCr) * 10000000}` : ''}`),
-  getNetZero: () => fetchAPI('/netzero'),
-  getScores: () => fetchAPI('/scores'),
-  getCarbonCredits: (zoneId) => fetchAPI(`/carbon-credits${zoneId ? `?zone_id=${zoneId}` : ''}`),
-  getHealth: () => fetchAPI('/health'),
-  getReport: () => fetchAPI('/report'),
-  getAlerts: () => fetchAPI('/alerts'),
+  getOptimize: (zoneId, budgetCr, state) => {
+    const budget_inr = budgetCr ? Number(budgetCr) * 10000000 : undefined;
+    return fetchAPI(`/optimize${_qs({ zone_id: zoneId, budget_inr, state })}`);
+  },
+  getNetZero: (state) => fetchAPI(`/netzero${_qs({ state })}`),
+  getScores: (state) => fetchAPI(`/scores${_qs({ state })}`),
+  getCarbonCredits: (zoneId, state) => fetchAPI(`/carbon-credits${_qs({ zone_id: zoneId, state })}`),
+  getHealth: (state) => fetchAPI(`/health${_qs({ state })}`),
+  getReport: (state) => fetchAPI(`/report${_qs({ state })}`),
+  getAlerts: (state) => fetchAPI(`/alerts${_qs({ state })}`),
 };

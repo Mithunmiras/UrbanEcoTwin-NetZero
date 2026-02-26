@@ -1,24 +1,24 @@
 import { useState, useEffect } from 'react';
 import { api } from '../api/client';
+import { useStateContext } from '../context/StateContext';
 import CesiumCityView from '../components/CesiumCityView';
-import { Globe2, Building2, Landmark } from 'lucide-react';
-
-const CITY_OPTIONS = [
-  { id: '', label: 'All Cities', icon: Globe2 },
-  { id: 'chennai', label: 'Chennai', icon: Landmark },
-  { id: 'coimbatore', label: 'Coimbatore', icon: Building2 },
-  { id: 'madurai', label: 'Madurai', icon: Building2 },
-];
+import { Globe2 } from 'lucide-react';
 
 export default function DigitalTwin() {
+  const { selectedState, stateName } = useStateContext();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedZoneId, setSelectedZoneId] = useState(null);
   const [selectedCity, setSelectedCity] = useState('');
+  const [cities, setCities] = useState([]);
+
+  useEffect(() => {
+    api.getCities(selectedState).then(d => setCities(d.cities || [])).catch(() => {});
+  }, [selectedState]);
 
   const fetchData = (city) => {
     setLoading(true);
-    api.getZones(city || undefined)
+    api.getZones(city || undefined, selectedState)
       .then(d => { setData(d); setLoading(false); })
       .catch(() => setLoading(false));
   };
@@ -27,7 +27,7 @@ export default function DigitalTwin() {
     fetchData(selectedCity);
     const interval = setInterval(() => fetchData(selectedCity), 60000);
     return () => clearInterval(interval);
-  }, [selectedCity]);
+  }, [selectedCity, selectedState]);
 
   if (loading) return <div className="loading"><div className="loading-spinner"></div><p>Loading Digital Twin...</p></div>;
   if (!data) return <div className="loading"><p>Failed to load data.</p></div>;
@@ -45,32 +45,25 @@ export default function DigitalTwin() {
           </span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 8, flexWrap: 'wrap' }}>
-          {CITY_OPTIONS.map(opt => {
-            const Icon = opt.icon;
-            return (
-              <button
-                key={opt.id}
-                onClick={() => { setSelectedCity(opt.id); setSelectedZoneId(null); }}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  padding: '6px 16px',
-                  borderRadius: 8,
-                  border: selectedCity === opt.id ? '1px solid #3b82f6' : '1px solid rgba(0,0,0,0.08)',
-                  background: selectedCity === opt.id ? 'rgba(59,130,246,0.15)' : 'rgba(0,0,0,0.04)',
-                  color: selectedCity === opt.id ? '#60a5fa' : '#94a3b8',
-                  cursor: 'pointer',
-                  fontSize: 13,
-                  fontWeight: selectedCity === opt.id ? 600 : 400,
-                  transition: 'all 0.2s ease',
-                }}
-              >
-                <Icon size={16} />
-                {opt.label}
-              </button>
-            );
-          })}
+          <select
+            value={selectedCity}
+            onChange={e => { setSelectedCity(e.target.value); setSelectedZoneId(null); }}
+            style={{
+              padding: '6px 16px',
+              borderRadius: 8,
+              border: '1px solid rgba(0,0,0,0.12)',
+              background: 'rgba(0,0,0,0.04)',
+              color: 'var(--text-primary)',
+              fontSize: 13,
+              cursor: 'pointer',
+              minWidth: 180,
+            }}
+          >
+            <option value="">All Districts ({stateName})</option>
+            {cities.map(c => (
+              <option key={c.id} value={c.id}>{c.name}</option>
+            ))}
+          </select>
           <span style={{ color: 'var(--text-muted)', fontSize: 13, marginLeft: 8 }}>
             {data.total_zones} zones monitored
           </span>
@@ -84,6 +77,7 @@ export default function DigitalTwin() {
           selectedZoneId={selectedZoneId}
           onSelectZone={setSelectedZoneId}
           selectedCity={selectedCity}
+          selectedState={selectedState}
         />
       </div>
 

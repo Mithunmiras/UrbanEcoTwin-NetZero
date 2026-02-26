@@ -183,9 +183,9 @@ def _who_compliance(zone):
 #  MAIN ENTRY POINT
 # ═══════════════════════════════════════════════════════════════════════════
 
-def get_health_impact():
+def get_health_impact(state=None):
     """ML-powered health impact analysis for all zones using live data."""
-    zones = get_all_zones()
+    zones = get_all_zones(state=state)
     results = []
 
     all_scores = []

@@ -7,9 +7,9 @@ from data.city_data import get_all_zones
 from datetime import datetime
 
 
-def generate_netzero_roadmap():
-    """Generate a comprehensive Net-Zero roadmap for the city."""
-    zones = get_all_zones()
+def generate_netzero_roadmap(state=None):
+    """Generate a comprehensive Net-Zero roadmap."""
+    zones = get_all_zones(state=state)
     city_total_co2 = sum(z["current_co2_ppm"] for z in zones)
     city_avg_co2 = city_total_co2 / len(zones)
 
@@ -96,7 +96,7 @@ def generate_netzero_roadmap():
         })
 
     return {
-        "city": "Chennai",
+        "state": state or "all",
         "baseline_co2_ppm": round(city_avg_co2, 1),
         "target_co2_ppm": 350,
         "target_year": target_year,

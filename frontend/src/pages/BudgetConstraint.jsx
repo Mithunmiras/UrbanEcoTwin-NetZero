@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { api } from '../api/client';
+import { useStateContext } from '../context/StateContext';
 
 export default function BudgetConstraint() {
+  const { selectedState, stateName } = useStateContext();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [budgetCr, setBudgetCr] = useState('');
@@ -9,7 +11,7 @@ export default function BudgetConstraint() {
   const fetchWithBudget = () => {
     if (!budgetCr || Number(budgetCr) <= 0) return;
     setLoading(true);
-    api.getOptimize(null, budgetCr).then(d => {
+    api.getOptimize(null, budgetCr, selectedState).then(d => {
       setData(d);
       setLoading(false);
     }).catch(() => setLoading(false));

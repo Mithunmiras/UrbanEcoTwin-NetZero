@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { api } from '../api/client';
+import { useStateContext } from '../context/StateContext';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   Cell, LineChart, Line, Legend
@@ -7,8 +8,9 @@ import {
 import { TreePine, Sun, Car, Leaf, TrafficCone, Factory, Microscope } from 'lucide-react';
 
 export default function Simulation() {
+  const { selectedState } = useStateContext();
   const [zones, setZones] = useState(null);
-  const [selectedZone, setSelectedZone] = useState('chennai_adyar');
+  const [selectedZone, setSelectedZone] = useState(null);
   const [actions, setActions] = useState({
     plant_trees: 0,
     add_solar_panels: 0,
@@ -22,8 +24,12 @@ export default function Simulation() {
   const [simulating, setSimulating] = useState(false);
 
   useEffect(() => {
-    api.getZones().then(d => { setZones(d); setLoading(false); }).catch(() => setLoading(false));
-  }, []);
+    api.getZones(undefined, selectedState).then(d => {
+      setZones(d);
+      if (d.zones?.length > 0 && !selectedZone) setSelectedZone(d.zones[0].id);
+      setLoading(false);
+    }).catch(() => setLoading(false));
+  }, [selectedState]);
 
   const runSimulation = () => {
     const actionList = Object.entries(actions)

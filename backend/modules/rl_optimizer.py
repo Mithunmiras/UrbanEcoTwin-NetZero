@@ -221,9 +221,9 @@ def _get_all_strategies_for_budget(zone, include_light=True):
     return sorted(all_strats, key=lambda x: x.get("rl_reward", 0), reverse=True)
 
 
-def optimize(zone_id: str = None):
+def optimize(zone_id: str = None, state: str = None):
     """Run RL-style optimization to find best strategy for each zone."""
-    zones = get_all_zones()
+    zones = get_all_zones(state=state)
     if zone_id:
         zones = [z for z in zones if z["id"] == zone_id]
 
@@ -275,15 +275,15 @@ def _is_low_need(co2_ppm: float, aqi: float) -> bool:
     return co2_ppm < 400 and aqi < 80
 
 
-def optimize_with_budget(budget_inr: float):
+def optimize_with_budget(budget_inr: float, state: str = None):
     """
     Need-based budget allocation:
     - Low-need zones (CO2 < 400, AQI < 80): "Not Required"
     - High-need zones: allocate budget proportionally to need; higher need = larger share
     - Pick best strategy that fits within each zone's allocated share
     """
-    results = optimize()
-    zones = get_all_zones()
+    results = optimize(state=state)
+    zones = get_all_zones(state=state)
     zone_lookup = {z["id"]: z for z in zones}
 
     zone_results = results.get("optimization_results", [])

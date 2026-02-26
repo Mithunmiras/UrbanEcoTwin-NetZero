@@ -1,36 +1,28 @@
 import { useState, useEffect } from 'react';
 import { api } from '../api/client';
+import { useStateContext } from '../context/StateContext';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Cell
 } from 'recharts';
-import { HeartPulse, Globe2, Landmark, Building2 } from 'lucide-react';
-
-const CITY_OPTIONS = [
-  { id: '', label: 'All Cities', icon: Globe2 },
-  { id: 'chennai', label: 'Chennai', icon: Landmark },
-  { id: 'coimbatore', label: 'Coimbatore', icon: Building2 },
-  { id: 'madurai', label: 'Madurai', icon: Building2 },
-];
+import { HeartPulse } from 'lucide-react';
 
 export default function Health() {
+  const { selectedState, stateName } = useStateContext();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [selectedCity, setSelectedCity] = useState('');
   const [selectedZone, setSelectedZone] = useState(null);
 
   useEffect(() => {
     setLoading(true);
-    api.getHealth().then(d => { setData(d); setLoading(false); }).catch(() => setLoading(false));
-  }, []);
+    setSelectedZone(null);
+    api.getHealth(selectedState).then(d => { setData(d); setLoading(false); }).catch(() => setLoading(false));
+  }, [selectedState]);
 
-  if (loading) return <div className="loading"><div className="loading-spinner"></div><p>Analyzing health impact with ML models...</p></div>;
+  if (loading) return <div className="loading"><div className="loading-spinner"></div><p>Analyzing health impact for {stateName}...</p></div>;
   if (!data) return <div className="loading"><p>Failed to load data.</p></div>;
 
-  // Filter by city
-  const filtered = selectedCity
-    ? data.health_impact_analysis.filter(z => z.city === selectedCity)
-    : data.health_impact_analysis;
+  const filtered = data.health_impact_analysis || [];
 
   const current = selectedZone ? filtered.find(z => z.zone_id === selectedZone) : null;
 
@@ -38,31 +30,9 @@ export default function Health() {
     <div className="fade-in">
       <div className="page-header">
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <h1><HeartPulse size={28} style={{ color: '#ef4444' }} /> ML Health Impact Predictor</h1>
+          <h1><HeartPulse size={28} style={{ color: '#ef4444' }} /> {stateName} ML Health Impact Predictor</h1>
           <span className="live-badge live"><span className="live-dot"></span>Live Data</span>
         </div>
-      </div>
-
-      {/* City filter */}
-      <div style={{ display: 'flex', gap: 8, marginBottom: 20, flexWrap: 'wrap' }}>
-        {CITY_OPTIONS.map(opt => {
-          const Icon = opt.icon;
-          return (
-            <button key={opt.id} onClick={() => { setSelectedCity(opt.id); setSelectedZone(null); }}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 6,
-                padding: '6px 16px', borderRadius: 8, fontSize: 13, cursor: 'pointer',
-                border: selectedCity === opt.id ? '1px solid #3b82f6' : '1px solid rgba(0,0,0,0.08)',
-                background: selectedCity === opt.id ? 'rgba(59,130,246,0.15)' : 'rgba(0,0,0,0.04)',
-                color: selectedCity === opt.id ? '#60a5fa' : '#94a3b8',
-                fontWeight: selectedCity === opt.id ? 600 : 400,
-              }}
-            >
-              <Icon size={16} />
-              {opt.label}
-            </button>
-          );
-        })}
       </div>
 
       {/* Summary cards */}

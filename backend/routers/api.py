@@ -17,7 +17,7 @@ from pydantic import BaseModel
 from typing import List, Optional
 
 from modules.digital_twin import get_digital_twin
-from data.city_data import get_cities
+from data.city_data import get_cities, get_states
 from modules.data_fusion import fuse_data
 from modules.prediction_engine import get_predictions, get_counterfactual_prediction
 from modules.scenario_simulation import simulate_scenario, get_available_actions
@@ -82,28 +82,34 @@ def api_logout():
 
 # --- Endpoints ---
 
+@router.get("/states")
+def api_states():
+    """Get list of available states."""
+    return {"states": get_states()}
+
+
 @router.get("/cities")
-def api_cities():
-    """Get list of available cities."""
-    return {"cities": get_cities()}
+def api_cities(state: Optional[str] = Query(None)):
+    """Get list of available districts. Optionally filter by state."""
+    return {"cities": get_cities(state=state)}
 
 
 @router.get("/zones")
-def api_zones(city: Optional[str] = Query(None)):
-    """Get digital twin data for all city zones. Optionally filter by city."""
-    return get_digital_twin(city=city)
+def api_zones(city: Optional[str] = Query(None), state: Optional[str] = Query(None)):
+    """Get digital twin data for zones. Optionally filter by city or state."""
+    return get_digital_twin(city=city, state=state)
 
 
 @router.get("/data-fusion")
-def api_data_fusion():
+def api_data_fusion(state: Optional[str] = Query(None)):
     """Get unified environmental data from all sources."""
-    return fuse_data()
+    return fuse_data(state=state)
 
 
 @router.get("/predictions")
-def api_predictions(zone_id: Optional[str] = Query(None)):
-    """Get AI-powered multi-horizon CO₂ predictions (1h/24h/7d/30d) with SHAP explainability."""
-    return get_predictions(zone_id)
+def api_predictions(zone_id: Optional[str] = Query(None), state: Optional[str] = Query(None)):
+    """Get AI-powered multi-horizon CO₂ predictions."""
+    return get_predictions(zone_id, state=state)
 
 
 @router.get("/predictions/counterfactual")
@@ -131,48 +137,49 @@ def api_available_actions():
 @router.get("/optimize")
 def api_optimize(
     zone_id: Optional[str] = Query(None),
-    budget_inr: Optional[float] = Query(None, description="Budget constraint in INR (e.g. 100000000 for ₹100 Cr)"),
+    budget_inr: Optional[float] = Query(None, description="Budget constraint in INR"),
+    state: Optional[str] = Query(None),
 ):
-    """Get RL-optimized sustainability strategies. Optional budget_inr for dynamic budget constraint."""
-    result = optimize(zone_id)
+    """Get RL-optimized sustainability strategies."""
+    result = optimize(zone_id, state=state)
     if budget_inr and budget_inr > 0:
-        result["budget_constrained"] = optimize_with_budget(budget_inr)
+        result["budget_constrained"] = optimize_with_budget(budget_inr, state=state)
     return result
 
 
 
 
 @router.get("/netzero")
-def api_netzero():
+def api_netzero(state: Optional[str] = Query(None)):
     """Get Net-Zero roadmap."""
-    return generate_netzero_roadmap()
+    return generate_netzero_roadmap(state=state)
 
 
 @router.get("/scores")
-def api_scores():
+def api_scores(state: Optional[str] = Query(None)):
     """Get sustainability scores for all zones."""
-    return get_sustainability_scores()
+    return get_sustainability_scores(state=state)
 
 
 @router.get("/carbon-credits")
-def api_carbon_credits(zone_id: Optional[str] = Query(None)):
+def api_carbon_credits(zone_id: Optional[str] = Query(None), state: Optional[str] = Query(None)):
     """Get carbon credit calculations."""
-    return calculate_carbon_credits(zone_id)
+    return calculate_carbon_credits(zone_id, state=state)
 
 
 @router.get("/health")
-def api_health():
+def api_health(state: Optional[str] = Query(None)):
     """Get health impact predictions."""
-    return get_health_impact()
+    return get_health_impact(state=state)
 
 
 @router.get("/report")
-def api_report():
+def api_report(state: Optional[str] = Query(None)):
     """Generate comprehensive policy report."""
-    return generate_report()
+    return generate_report(state=state)
 
 
 @router.get("/alerts")
-def api_alerts():
+def api_alerts(state: Optional[str] = Query(None)):
     """Get active sustainability alerts."""
-    return get_alerts()
+    return get_alerts(state=state)

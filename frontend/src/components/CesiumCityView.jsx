@@ -10,12 +10,12 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import * as Cesium from 'cesium';
 import 'cesium/Build/Cesium/Widgets/widgets.css';
 
-// ── City Camera Positions ──────────────────────────────────────────
-const CITY_CAMERA = {
-    chennai: { lng: 80.20, lat: 13.04, alt: 35000 },
-    coimbatore: { lng: 76.96, lat: 11.01, alt: 35000 },
-    madurai: { lng: 78.12, lat: 9.93, alt: 35000 },
-    '': { lng: 78.16, lat: 11.33, alt: 500000 }, // Tamil Nadu view
+// ── State overview camera positions ────────────────────────────────
+const STATE_CAMERA = {
+    tamilnadu:       { lng: 78.66, lat: 11.13, alt: 600000 },
+    kerala:          { lng: 76.27, lat: 10.85, alt: 500000 },
+    karnataka:       { lng: 75.71, lat: 15.32, alt: 700000 },
+    andhrapradesh:   { lng: 79.74, lat: 15.91, alt: 700000 },
 };
 
 // ── Risk Colors ────────────────────────────────────────────────────
@@ -33,7 +33,7 @@ const RISK_OUTLINE_COLORS = {
     Low: Cesium.Color.fromCssColorString('#22c55e'),
 };
 
-export default function CesiumCityView({ zones, selectedZoneId, onSelectZone, selectedCity = '' }) {
+export default function CesiumCityView({ zones, selectedZoneId, onSelectZone, selectedCity = '', selectedState = 'tamilnadu' }) {
     const viewerRef = useRef(null);
     const containerRef = useRef(null);
     const entitiesRef = useRef({});
@@ -195,69 +195,48 @@ export default function CesiumCityView({ zones, selectedZoneId, onSelectZone, se
         });
     }, [selectedZoneId, zones]);
 
-    // ── Fly to city when city selector changes or initial load ────
+    // ── Fly to city/district when selector changes or initial load ──
     const lastFlownCityRef = useRef(null);
 
     useEffect(() => {
         const viewer = viewerRef.current;
         if (!viewer || !zones || zones.length === 0) return;
 
-        // Ensure we only trigger the city flyTo when the user actually changes the city
-        // (or on the very first load)
         if (lastFlownCityRef.current === selectedCity) return;
         lastFlownCityRef.current = selectedCity;
 
-        // If a specific city is selected, fly to it
+        // If a specific district is selected, find its zone and fly there
         if (selectedCity) {
-            const cam = CITY_CAMERA[selectedCity];
-            if (cam) {
+            const zone = zones.find(z => z.id.includes(selectedCity.replace(/\s+/g, '_').toLowerCase()));
+            if (zone) {
                 viewer.camera.flyTo({
-                    destination: Cesium.Cartesian3.fromDegrees(cam.lng, cam.lat, cam.alt),
-                    orientation: {
-                        heading: Cesium.Math.toRadians(0),
-                        pitch: Cesium.Math.toRadians(-45),
-                        roll: 0,
-                    },
+                    destination: Cesium.Cartesian3.fromDegrees(zone.lng, zone.lat, 35000),
+                    orientation: { heading: Cesium.Math.toRadians(0), pitch: Cesium.Math.toRadians(-45), roll: 0 },
                     duration: 2,
                 });
             }
         }
-        // If NO selection (All Cities), find the absolute worst zone and zoom to it
+        // No selection — find worst zone and zoom to it, or show state overview
         else if (selectedCity === '') {
-            // Find the zone with the highest AQI
             const worstZone = [...zones].sort((a, b) => b.current_aqi - a.current_aqi)[0];
 
             if (worstZone) {
-                // Determine which city this zone belongs to (or just fly directly to the zone but pulled back a bit)
                 viewer.camera.flyTo({
                     destination: Cesium.Cartesian3.fromDegrees(worstZone.lng, worstZone.lat, 40000),
-                    orientation: {
-                        heading: Cesium.Math.toRadians(0),
-                        pitch: Cesium.Math.toRadians(-45),
-                        roll: 0,
-                    },
+                    orientation: { heading: Cesium.Math.toRadians(0), pitch: Cesium.Math.toRadians(-45), roll: 0 },
                     duration: 2.5,
                 });
-
-                // Auto-select it so the detail card opens up
-                if (!selectedZoneId) {
-                    onSelectZone(worstZone.id);
-                }
+                if (!selectedZoneId) onSelectZone(worstZone.id);
             } else {
-                // Fallback India view
-                const cam = CITY_CAMERA[''];
+                const cam = STATE_CAMERA[selectedState] || STATE_CAMERA.tamilnadu;
                 viewer.camera.flyTo({
                     destination: Cesium.Cartesian3.fromDegrees(cam.lng, cam.lat, cam.alt),
-                    orientation: {
-                        heading: Cesium.Math.toRadians(0),
-                        pitch: Cesium.Math.toRadians(-90),
-                        roll: 0,
-                    },
+                    orientation: { heading: Cesium.Math.toRadians(0), pitch: Cesium.Math.toRadians(-90), roll: 0 },
                     duration: 2,
                 });
             }
         }
-    }, [selectedCity, zones, selectedZoneId, onSelectZone]);
+    }, [selectedCity, zones, selectedZoneId, onSelectZone, selectedState]);
 
     return (
         <div style={{ position: 'relative', width: '100%', height: '100%' }}>

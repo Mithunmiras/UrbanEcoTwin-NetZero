@@ -10,23 +10,23 @@ from modules.carbon_credits import calculate_carbon_credits
 from modules.netzero_planner import generate_netzero_roadmap
 
 
-def generate_report():
+def generate_report(state=None):
     """Generate comprehensive policy report."""
-    zones = get_all_zones()
-    scores = get_sustainability_scores()
-    credits = calculate_carbon_credits()
-    roadmap = generate_netzero_roadmap()
+    zones = get_all_zones(state=state)
+    scores = get_sustainability_scores(state=state)
+    credits = calculate_carbon_credits(state=state)
+    roadmap = generate_netzero_roadmap(state=state)
 
     city_avg_co2 = sum(z["current_co2_ppm"] for z in zones) / len(zones)
     city_avg_aqi = sum(z["current_aqi"] for z in zones) / len(zones)
 
     report = {
         "title": "Urban Sustainability & Net-Zero Planning Report",
-        "subtitle": "AI-Powered Environmental Intelligence for Chennai Metropolitan Area",
+        "subtitle": f"AI-Powered Environmental Intelligence — {state.replace('_', ' ').title() if state else 'All States'}",
         "generated_at": datetime.now().isoformat(),
         "report_id": f"UR-{datetime.now().strftime('%Y%m%d-%H%M')}",
         "executive_summary": {
-            "city": "Chennai",
+            "city": state or "all",
             "zones_analyzed": len(zones),
             "current_avg_co2_ppm": round(city_avg_co2, 1),
             "current_avg_aqi": round(city_avg_aqi),

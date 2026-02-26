@@ -1,20 +1,23 @@
 import { useState, useEffect } from 'react';
 import { api } from '../api/client';
+import { useStateContext } from '../context/StateContext';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import { MapPin, CircleDollarSign } from 'lucide-react';
 
 const COLORS = ['#22c55e', '#3b82f6', '#f97316', '#a855f7', '#eab308', '#ef4444', '#14b8a6', '#f43f5e', '#8b5cf6', '#06b6d4'];
 
 export default function CarbonCredits() {
+  const { selectedState, stateName } = useStateContext();
   const [data, setData] = useState(null);
   const [cities, setCities] = useState([]);
   const [selectedCity, setSelectedCity] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    setLoading(true);
     Promise.all([
-      api.getCities(),
-      api.getCarbonCredits()
+      api.getCities(selectedState),
+      api.getCarbonCredits(undefined, selectedState)
     ]).then(([citiesData, creditsData]) => {
       setCities(citiesData.cities);
       setData(creditsData);
@@ -23,7 +26,7 @@ export default function CarbonCredits() {
       }
       setLoading(false);
     }).catch(() => setLoading(false));
-  }, []);
+  }, [selectedState]);
 
   if (loading) return <div className="loading"><div className="loading-spinner"></div><p>Calculating carbon credits...</p></div>;
   if (!data || !selectedCity) return <div className="loading"><p>Failed to load data.</p></div>;

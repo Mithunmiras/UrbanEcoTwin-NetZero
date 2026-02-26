@@ -156,9 +156,9 @@ def _generate_advanced_series(zone, all_zones, hours, traffic_factor_override=No
 #  MAIN ENTRY
 # ═══════════════════════════════════════════════════════════════════════════
 
-def get_predictions(zone_id: str = None):
+def get_predictions(zone_id: str = None, state: str = None):
     """Generate multi-horizon predictions (1h, 24h, 7d, 30d) with confidence intervals + SHAP."""
-    all_zones = get_all_zones()
+    all_zones = get_all_zones(state=state)
 
     zones = all_zones
     if zone_id:

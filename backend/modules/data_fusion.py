@@ -6,9 +6,9 @@ Combines multiple datasets (pollution, weather, traffic, population) into unifie
 from data.city_data import get_all_zones
 
 
-def fuse_data():
+def fuse_data(state=None):
     """Merge all environmental data sources into unified zone profiles."""
-    zones = get_all_zones()
+    zones = get_all_zones(state=state)
     fused = []
     for zone in zones:
         # Calculate composite environmental index (only using live API data)

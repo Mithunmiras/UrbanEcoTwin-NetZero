@@ -18,9 +18,9 @@ THRESHOLDS = {
 }
 
 
-def get_alerts():
+def get_alerts(state=None):
     """Generate sustainability alerts for all zones."""
-    zones = get_all_zones()
+    zones = get_all_zones(state=state)
     alerts = []
     alert_id = 1
 

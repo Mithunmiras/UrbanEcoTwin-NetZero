@@ -1,15 +1,18 @@
 import { useState, useEffect } from 'react';
 import { api } from '../api/client';
+import { useStateContext } from '../context/StateContext';
 import { RadarChart, PolarGrid, PolarAngleAxis, Radar, ResponsiveContainer, Tooltip } from 'recharts';
 import { Star } from 'lucide-react';
 
 export default function Scores() {
+  const { selectedState, stateName } = useStateContext();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api.getScores().then(d => { setData(d); setLoading(false); }).catch(() => setLoading(false));
-  }, []);
+    setLoading(true);
+    api.getScores(selectedState).then(d => { setData(d); setLoading(false); }).catch(() => setLoading(false));
+  }, [selectedState]);
 
   if (loading) return <div className="loading"><div className="loading-spinner"></div><p>Calculating scores...</p></div>;
   if (!data) return <div className="loading"><p>Failed to load data.</p></div>;

@@ -1,8 +1,9 @@
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useStateContext } from '../context/StateContext';
 import {
   LayoutDashboard, Globe, BrainCircuit, FlaskConical, Cpu,
-  Target, Star, Coins, Wallet, HeartPulse, FileText, Bell, LogOut
+  Target, Star, Coins, Wallet, HeartPulse, FileText, Bell, LogOut, MapPin
 } from 'lucide-react';
 
 import logoImg from '../assets/logo.png';
@@ -24,6 +25,7 @@ const navItems = [
 
 export default function Sidebar() {
   const { user, logout } = useAuth();
+  const { stateName, clearState } = useStateContext();
 
   return (
     <aside className="sidebar">
@@ -35,6 +37,17 @@ export default function Sidebar() {
           <div className="logo-text">UrbanEcoTwin</div>
           <div className="logo-sub">Net-Zero Platform</div>
         </div>
+      </div>
+
+      {/* State indicator */}
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: 8, padding: '8px 16px',
+        margin: '0 12px 8px', background: 'rgba(59,130,246,0.08)', borderRadius: 10,
+        cursor: 'pointer', transition: 'background 0.2s',
+      }} onClick={clearState} title="Change State">
+        <MapPin size={16} style={{ color: '#3b82f6' }} />
+        <span style={{ fontSize: 13, fontWeight: 600, color: '#1e293b', flex: 1 }}>{stateName}</span>
+        <span style={{ fontSize: 11, color: '#3b82f6', fontWeight: 500 }}>Change</span>
       </div>
       <nav className="sidebar-nav">
         {navItems.map((item, i) =>
