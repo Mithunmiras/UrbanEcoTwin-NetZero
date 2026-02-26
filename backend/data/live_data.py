@@ -240,9 +240,9 @@ def _merge_openmeteo(aq, wx):
         result["current_co2_ppm"] = round(CO_TO_CO2_BASELINE + (co_ugm3 / CO_TO_CO2_SCALE), 1)
 
     if wx:
-        result["avg_temperature_c"] = wx.get("temperature_2m", 30.0)
-        result["avg_humidity_pct"] = wx.get("relative_humidity_2m", 70)
-        result["avg_wind_speed_kmh"] = wx.get("wind_speed_10m", 12.0)
+        result["avg_temperature_c"] = wx.get("temperature_2m") or 0
+        result["avg_humidity_pct"] = wx.get("relative_humidity_2m") or 0
+        result["avg_wind_speed_kmh"] = wx.get("wind_speed_10m") or 0
 
     return result
 
@@ -268,9 +268,9 @@ def _merge_owm(aq, wx):
     if wx:
         main = wx.get("main", {})
         wind = wx.get("wind", {})
-        result["avg_temperature_c"] = main.get("temp", 30.0)
-        result["avg_humidity_pct"] = main.get("humidity", 70)
+        result["avg_temperature_c"] = main.get("temp") or 0
+        result["avg_humidity_pct"] = main.get("humidity") or 0
         # OWM wind is in m/s, convert to km/h
-        result["avg_wind_speed_kmh"] = round((wind.get("speed", 3.3)) * 3.6, 1)
+        result["avg_wind_speed_kmh"] = round((wind.get("speed") or 0) * 3.6, 1)
 
     return result

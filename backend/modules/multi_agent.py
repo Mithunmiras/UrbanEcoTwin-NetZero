@@ -39,7 +39,7 @@ def _isolation_forest_anomaly(zones_data):
     """Isolation Forest anomaly detection — detects unusual patterns beyond threshold rules."""
     if not HAS_SKLEARN or len(zones_data) < 3:
         return []
-    X = np.array([[float(z["current_co2_ppm"]), float(z["current_aqi"]), float(z.get("pm2_5", 50)) / 10] for z in zones_data])
+    X = np.array([[float(z["current_co2_ppm"]), float(z["current_aqi"]), float(z.get("pm2_5") or 0) / 10] for z in zones_data])
     clf = IsolationForest(contamination=0.15, random_state=42)
     preds = clf.fit_predict(X)
     anomalies = []
@@ -110,7 +110,7 @@ class MonitoringAgent:
     @staticmethod
     def analyze():
         zones = get_all_zones()
-        zones_list = [{"id": z["id"], "name": z["name"], "lat": z["lat"], "lng": z["lng"], "current_co2_ppm": z["current_co2_ppm"], "current_aqi": z["current_aqi"], "pm2_5": z.get("pm2_5", 50), "city": z.get("city", "")} for z in zones]
+        zones_list = [{"id": z["id"], "name": z["name"], "lat": z["lat"], "lng": z["lng"], "current_co2_ppm": z["current_co2_ppm"], "current_aqi": z["current_aqi"], "pm2_5": z.get("pm2_5") or 0, "city": z.get("city", "")} for z in zones]
 
         # ML anomaly detection
         if_anomalies = _isolation_forest_anomaly(zones_list)

@@ -10,7 +10,7 @@
 ![Cesium](https://img.shields.io/badge/Cesium.js-3D_Globe-6CADDF?style=for-the-badge&logo=cesium&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-6-646CFF?style=for-the-badge&logo=vite&logoColor=white)
 
-**An AI-powered sustainability intelligence platform with a 3D Digital Twin of Indian metros — fetches live pollution data, predicts emissions with ML, simulates strategies, optimizes carbon reduction, and generates Net-Zero roadmaps.**
+**An AI-powered sustainability intelligence platform with a 3D Digital Twin of Tamil Nadu cities — fetches live pollution data, predicts emissions with ML, simulates strategies, optimizes carbon reduction, and generates Net-Zero roadmaps.**
 
 </div>
 
@@ -22,7 +22,7 @@ UrbanEcoTwin-NetZero addresses critical urban sustainability challenges by combi
 
 - 🌐 **3D Digital Twin** — Cesium.js globe with satellite imagery and real-time environmental overlays
 - 📡 **Live Data** — Real-time pollution & weather from Open-Meteo + OpenWeatherMap APIs (dual fallback)
-- 🏙️ **Multi-City** — 50 zones across **Chennai** (20), **Mumbai** (15), and **Delhi** (15)
+- 🏛️ **Multi-City** — 50 zones across **Tamil Nadu**: **Chennai** (20), **Coimbatore** (15), and **Madurai** (15)
 - 🤖 **Machine Learning** — LSTM, XGBoost, Logistic Regression, and Weighted Ensemble models
 - 🧬 **Reinforcement Learning** — DQN-based strategy optimization
 - 🤝 **Multi-Agent System** — 4 autonomous AI agents working collaboratively
@@ -45,7 +45,7 @@ Cities currently:
               ↓
     Data Fusion Engine         ← Merges live pollution, weather data for 50 zones
               ↓
-    Urban Digital Twin         ← 3D Cesium.js globe with 3 Indian metros
+    Urban Digital Twin         ← 3D Cesium.js globe with 3 Tamil Nadu cities
               ↓
     AI Prediction Engine       ← LSTM + XGBoost CO₂ forecasts (1h, 24h, 7-day)
               ↓
@@ -78,8 +78,8 @@ Cities currently:
 | City | Zones | Coverage |
 |------|-------|----------|
 | 🏛️ **Chennai** | 20 | Tondiarpet, Madhavaram, Perambur, Ambattur, Egmore, Nungambakkam, Kilpauk, Anna Nagar, Kodambakkam, T. Nagar, Mylapore, Adyar, Guindy, Velachery, Thiruvanmiyur, Porur, Valasaravakkam, Sholinganallur, Chromepet, Tambaram |
-| 🌊 **Mumbai** | 15 | Colaba, Bandra, Andheri, Borivali, Dadar, Kurla, Powai, Worli, Malad, Goregaon, Thane, Navi Mumbai, Vashi, Chembur, Kandivali |
-| 🏙️ **Delhi** | 15 | Connaught Place, Chandni Chowk, Saket, Dwarka, Rohini, Lajpat Nagar, Karol Bagh, Nehru Place, Janakpuri, Pitampura, Greater Kailash, Noida, Gurgaon, Vasant Kunj, Mayur Vihar |
+| 🏭 **Coimbatore** | 15 | R.S. Puram, Gandhipuram, Peelamedu, Saibaba Colony, Race Course, Ukkadam, Singanallur, Kuniyamuthur, Ganapathy, Vadavalli, Tidel Park, Podanur, Sulur, Karumbukkadai, Saravanampatti |
+| 🛕 **Madurai** | 15 | Anna Nagar, Goripalayam, Tallakulam, Pasumalai, K.K. Nagar, S.S. Colony, Meenakshi Amman, Thiruparankundram, Vilangudi, Ponmeni, Avaniyapuram, Teppakulam, Harveypatti, Bypass Road, Sellur |
 
 ## 🧪 ML Models
 
@@ -177,7 +177,7 @@ Navigate to **http://localhost:5173** to view the dashboard.
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | GET | `/api/cities` | List available cities |
-| GET | `/api/zones` | Digital twin zone data (optionally `?city=mumbai`) |
+| GET | `/api/zones` | Digital twin zone data (optionally `?city=coimbatore`) |
 | GET | `/api/data-fusion` | Unified environmental data |
 | GET | `/api/predictions` | AI CO₂ predictions |
 | POST | `/api/simulate` | Run scenario simulation |
@@ -247,7 +247,7 @@ UrbanEcoTwin-NetZero/
 
 ## 🌱 Sustainability Impact
 
-- ✅ Real-time environmental intelligence across 3 Indian metros
+- ✅ Real-time environmental intelligence across 3 Tamil Nadu cities
 - ✅ ML-powered health risk assessment with WHO compliance
 - ✅ Data-driven Net-Zero planning with carbon credit economics
 - ✅ Smart city decision support with scenario simulation

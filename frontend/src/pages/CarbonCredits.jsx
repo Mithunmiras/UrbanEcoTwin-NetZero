@@ -39,10 +39,8 @@ export default function CarbonCredits() {
 
   // Rate parsing for total recalculations
   const rateInr = parseFloat(data.market_rates?.rate_per_tonne_inr?.replace(/[^0-9.]/g, '') || 500);
-  const rateUsd = parseFloat(data.market_rates?.rate_per_tonne_usd?.replace(/[^0-9.]/g, '') || 6);
 
   const cityValueInrFormat = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(cityReduction * rateInr);
-  const cityValueUsdFormat = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(cityReduction * rateUsd);
 
   const pieData = filteredAnalysis.map(z => ({ name: z.zone_name, value: z.reduction_tonnes }));
 
@@ -88,11 +86,6 @@ export default function CarbonCredits() {
           <div className="metric-value" style={{ fontSize: 24 }}>{cityValueInrFormat}</div>
           <div className="metric-change down">potential earnings</div>
         </div>
-        <div className="card metric-card purple">
-          <div className="metric-label">{currentCity?.name} Value (USD)</div>
-          <div className="metric-value" style={{ fontSize: 24 }}>{cityValueUsdFormat}</div>
-          <div className="metric-change down">international market</div>
-        </div>
         <div className="card metric-card orange">
           <div className="metric-label">{currentCity?.name} Credits</div>
           <div className="metric-value">{cityCreditsEarned.toFixed(2)}</div>
@@ -137,7 +130,6 @@ export default function CarbonCredits() {
                 <th>Target</th>
                 <th>Reduction</th>
                 <th>Credits (INR)</th>
-                <th>Credits (USD)</th>
               </tr>
             </thead>
             <tbody>
@@ -148,7 +140,6 @@ export default function CarbonCredits() {
                   <td>{z.target_co2_ppm} ppm</td>
                   <td style={{ color: 'var(--accent-green)' }}>{z.reduction_tonnes.toFixed(2)} tonnes</td>
                   <td style={{ fontWeight: 600 }}>{z.carbon_credits?.value_inr}</td>
-                  <td>{z.carbon_credits?.value_usd}</td>
                 </tr>
               ))}
             </tbody>

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import logoImg from '../assets/logo.png';
 
 export default function Login() {
   const { login } = useAuth();
@@ -40,7 +41,9 @@ export default function Login() {
         {/* Left — branding panel */}
         <div className="login-branding">
           <div className="branding-content">
-            <div className="branding-icon">🌍</div>
+            <div className="branding-icon">
+              <img src={logoImg} alt="UrbanEcoTwin" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
+            </div>
             <h1>UrbanEcoTwin</h1>
             <p className="branding-tagline">Net-Zero Sustainability Platform</p>
             <div className="branding-divider"></div>
@@ -50,12 +53,6 @@ export default function Login() {
         {/* Right — login form */}
         <div className="login-form-panel">
           <form className="login-form" onSubmit={handleSubmit}>
-            <div className="form-header">
-              <div className="form-logo">🔐</div>
-              <h2>Admin Access</h2>
-              <p>Sign in to the sustainability command center</p>
-            </div>
-
             {error && (
               <div className="login-error">
                 <span>⚠️</span> {error}

@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import { api } from '../api/client';
 import CesiumCityView from '../components/CesiumCityView';
-import { Globe2, Building2, Waves, Landmark } from 'lucide-react';
+import { Globe2, Building2, Landmark } from 'lucide-react';
 
 const CITY_OPTIONS = [
   { id: '', label: 'All Cities', icon: Globe2 },
   { id: 'chennai', label: 'Chennai', icon: Landmark },
-  { id: 'mumbai', label: 'Mumbai', icon: Waves },
-  { id: 'delhi', label: 'Delhi', icon: Building2 },
+  { id: 'coimbatore', label: 'Coimbatore', icon: Building2 },
+  { id: 'madurai', label: 'Madurai', icon: Building2 },
 ];
 
 export default function DigitalTwin() {

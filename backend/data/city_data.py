@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 """
-City data for Indian metros — Chennai, Mumbai, Delhi.
+City data for Tamil Nadu metros — Chennai, Coimbatore, Madurai.
 All environmental readings come live from Open-Meteo / OpenWeatherMap.
 Only zone names, coordinates, and city grouping are defined here.
 """
@@ -14,9 +14,9 @@ logger = logging.getLogger(__name__)
 # ── City Definitions ───────────────────────────────────────────────────────
 
 CITIES = {
-    "chennai": {"name": "Chennai", "lat": 13.08, "lng": 80.27},
-    "mumbai":  {"name": "Mumbai",  "lat": 19.08, "lng": 72.88},
-    "delhi":   {"name": "Delhi",   "lat": 28.61, "lng": 77.21},
+    "chennai":    {"name": "Chennai",    "lat": 13.08, "lng": 80.27},
+    "coimbatore": {"name": "Coimbatore", "lat": 11.01, "lng": 76.96},
+    "madurai":    {"name": "Madurai",    "lat": 9.93,  "lng": 78.12},
 }
 
 # ── Zone Grid ──────────────────────────────────────────────────────────────
@@ -45,39 +45,39 @@ ZONES = {
     "chennai_chromepet":      {"name": "Chromepet",      "lat": 12.9516, "lng": 80.1420, "city": "chennai"},
     "chennai_tambaram":       {"name": "Tambaram",       "lat": 12.9249, "lng": 80.1000, "city": "chennai"},
 
-    # ═══════════════════ MUMBAI (15 zones) ═══════════════════
-    "mumbai_colaba":        {"name": "Colaba",        "lat": 18.9067, "lng": 72.8147, "city": "mumbai"},
-    "mumbai_bandra":        {"name": "Bandra",        "lat": 19.0596, "lng": 72.8295, "city": "mumbai"},
-    "mumbai_andheri":       {"name": "Andheri",       "lat": 19.1197, "lng": 72.8464, "city": "mumbai"},
-    "mumbai_borivali":      {"name": "Borivali",      "lat": 19.2307, "lng": 72.8567, "city": "mumbai"},
-    "mumbai_dadar":         {"name": "Dadar",         "lat": 19.0178, "lng": 72.8478, "city": "mumbai"},
-    "mumbai_kurla":         {"name": "Kurla",         "lat": 19.0726, "lng": 72.8794, "city": "mumbai"},
-    "mumbai_powai":         {"name": "Powai",         "lat": 19.1176, "lng": 72.9060, "city": "mumbai"},
-    "mumbai_worli":         {"name": "Worli",         "lat": 19.0118, "lng": 72.8157, "city": "mumbai"},
-    "mumbai_malad":         {"name": "Malad",         "lat": 19.1868, "lng": 72.8484, "city": "mumbai"},
-    "mumbai_goregaon":      {"name": "Goregaon",     "lat": 19.1663, "lng": 72.8494, "city": "mumbai"},
-    "mumbai_thane":         {"name": "Thane",         "lat": 19.2183, "lng": 72.9781, "city": "mumbai"},
-    "mumbai_navi_mumbai":   {"name": "Navi Mumbai",   "lat": 19.0330, "lng": 73.0297, "city": "mumbai"},
-    "mumbai_vashi":         {"name": "Vashi",         "lat": 19.0771, "lng": 72.9987, "city": "mumbai"},
-    "mumbai_chembur":       {"name": "Chembur",       "lat": 19.0522, "lng": 72.8994, "city": "mumbai"},
-    "mumbai_kandivali":     {"name": "Kandivali",     "lat": 19.2058, "lng": 72.8527, "city": "mumbai"},
+    # ═══════════════════ COIMBATORE (15 zones) ═══════════════════
+    "coimbatore_rs_puram":       {"name": "R.S. Puram",       "lat": 11.0051, "lng": 76.9569, "city": "coimbatore"},
+    "coimbatore_gandhipuram":    {"name": "Gandhipuram",      "lat": 11.0168, "lng": 76.9558, "city": "coimbatore"},
+    "coimbatore_peelamedu":      {"name": "Peelamedu",        "lat": 11.0273, "lng": 77.0252, "city": "coimbatore"},
+    "coimbatore_saibaba_colony": {"name": "Saibaba Colony",   "lat": 11.0237, "lng": 76.9476, "city": "coimbatore"},
+    "coimbatore_race_course":    {"name": "Race Course",      "lat": 11.0073, "lng": 76.9675, "city": "coimbatore"},
+    "coimbatore_ukkadam":        {"name": "Ukkadam",          "lat": 10.9904, "lng": 76.9547, "city": "coimbatore"},
+    "coimbatore_singanallur":    {"name": "Singanallur",      "lat": 10.9979, "lng": 77.0237, "city": "coimbatore"},
+    "coimbatore_kuniyamuthur":   {"name": "Kuniyamuthur",     "lat": 10.9615, "lng": 76.9533, "city": "coimbatore"},
+    "coimbatore_ganapathy":      {"name": "Ganapathy",        "lat": 11.0396, "lng": 76.9720, "city": "coimbatore"},
+    "coimbatore_vadavalli":      {"name": "Vadavalli",        "lat": 11.0229, "lng": 76.9015, "city": "coimbatore"},
+    "coimbatore_tidel_park":     {"name": "Tidel Park",       "lat": 11.0294, "lng": 77.0026, "city": "coimbatore"},
+    "coimbatore_podanur":        {"name": "Podanur",          "lat": 10.9595, "lng": 76.9854, "city": "coimbatore"},
+    "coimbatore_sulur":          {"name": "Sulur",            "lat": 11.0344, "lng": 77.1252, "city": "coimbatore"},
+    "coimbatore_karumbukkadai":  {"name": "Karumbukkadai",    "lat": 10.9833, "lng": 76.9100, "city": "coimbatore"},
+    "coimbatore_saravanampatti": {"name": "Saravanampatti",   "lat": 11.0771, "lng": 77.0011, "city": "coimbatore"},
 
-    # ═══════════════════ DELHI (15 zones) ═══════════════════
-    "delhi_connaught":     {"name": "Connaught Place", "lat": 28.6315, "lng": 77.2167, "city": "delhi"},
-    "delhi_chandni_chowk": {"name": "Chandni Chowk",  "lat": 28.6507, "lng": 77.2334, "city": "delhi"},
-    "delhi_saket":         {"name": "Saket",           "lat": 28.5244, "lng": 77.2065, "city": "delhi"},
-    "delhi_dwarka":        {"name": "Dwarka",          "lat": 28.5921, "lng": 77.0460, "city": "delhi"},
-    "delhi_rohini":        {"name": "Rohini",          "lat": 28.7495, "lng": 77.0565, "city": "delhi"},
-    "delhi_lajpat_nagar":  {"name": "Lajpat Nagar",   "lat": 28.5700, "lng": 77.2373, "city": "delhi"},
-    "delhi_karol_bagh":    {"name": "Karol Bagh",     "lat": 28.6514, "lng": 77.1907, "city": "delhi"},
-    "delhi_nehru_place":   {"name": "Nehru Place",    "lat": 28.5491, "lng": 77.2533, "city": "delhi"},
-    "delhi_janakpuri":     {"name": "Janakpuri",      "lat": 28.6219, "lng": 77.0818, "city": "delhi"},
-    "delhi_pitampura":     {"name": "Pitampura",      "lat": 28.7032, "lng": 77.1315, "city": "delhi"},
-    "delhi_greater_kailash":{"name": "Greater Kailash","lat": 28.5460, "lng": 77.2432, "city": "delhi"},
-    "delhi_noida":         {"name": "Noida",           "lat": 28.5355, "lng": 77.3910, "city": "delhi"},
-    "delhi_gurgaon":       {"name": "Gurgaon",         "lat": 28.4595, "lng": 77.0266, "city": "delhi"},
-    "delhi_vasant_kunj":   {"name": "Vasant Kunj",    "lat": 28.5195, "lng": 77.1565, "city": "delhi"},
-    "delhi_mayur_vihar":   {"name": "Mayur Vihar",    "lat": 28.5921, "lng": 77.2973, "city": "delhi"},
+    # ═══════════════════ MADURAI (15 zones) ═══════════════════
+    "madurai_anna_nagar":      {"name": "Anna Nagar",      "lat": 9.9252, "lng": 78.1198, "city": "madurai"},
+    "madurai_goripalayam":     {"name": "Goripalayam",     "lat": 9.9195, "lng": 78.1193, "city": "madurai"},
+    "madurai_tallakulam":      {"name": "Tallakulam",      "lat": 9.9368, "lng": 78.1214, "city": "madurai"},
+    "madurai_pasumalai":       {"name": "Pasumalai",       "lat": 9.9051, "lng": 78.1012, "city": "madurai"},
+    "madurai_kk_nagar":        {"name": "K.K. Nagar",      "lat": 9.9429, "lng": 78.1448, "city": "madurai"},
+    "madurai_ss_colony":       {"name": "S.S. Colony",     "lat": 9.9252, "lng": 78.1478, "city": "madurai"},
+    "madurai_meenakshi":       {"name": "Meenakshi Amman", "lat": 9.9195, "lng": 78.1193, "city": "madurai"},
+    "madurai_thiruparankundram": {"name": "Thiruparankundram", "lat": 9.8789, "lng": 78.0711, "city": "madurai"},
+    "madurai_vilangudi":       {"name": "Vilangudi",       "lat": 9.9466, "lng": 78.0901, "city": "madurai"},
+    "madurai_ponmeni":         {"name": "Ponmeni",         "lat": 9.9350, "lng": 78.1055, "city": "madurai"},
+    "madurai_avaniyapuram":    {"name": "Avaniyapuram",    "lat": 9.8642, "lng": 78.1128, "city": "madurai"},
+    "madurai_teppakulam":      {"name": "Teppakulam",      "lat": 9.9158, "lng": 78.1344, "city": "madurai"},
+    "madurai_harveypatti":     {"name": "Harveypatti",     "lat": 9.8987, "lng": 78.1567, "city": "madurai"},
+    "madurai_bypass_road":     {"name": "Bypass Road",     "lat": 9.9642, "lng": 78.1421, "city": "madurai"},
+    "madurai_sellur":          {"name": "Sellur",          "lat": 9.9517, "lng": 78.1583, "city": "madurai"},
 }
 
 
@@ -86,17 +86,17 @@ ZONES = {
 def _build_zone_entry(zone_id: str, zone: dict, live: dict) -> dict:
     """Merge zone identity with live readings."""
     readings = {
-        "current_co2_ppm": live.get("current_co2_ppm", 0),
-        "current_aqi": live.get("current_aqi", 0),
-        "avg_temperature_c": live.get("avg_temperature_c", 30.0),
-        "avg_humidity_pct": live.get("avg_humidity_pct", 70),
-        "avg_wind_speed_kmh": live.get("avg_wind_speed_kmh", 12.0),
-        "pm10": live.get("pm10", 0),
-        "pm2_5": live.get("pm2_5", 0),
-        "carbon_monoxide_ugm3": live.get("carbon_monoxide_ugm3", 0),
-        "nitrogen_dioxide_ugm3": live.get("nitrogen_dioxide_ugm3", 0),
-        "sulphur_dioxide_ugm3": live.get("sulphur_dioxide_ugm3", 0),
-        "ozone_ugm3": live.get("ozone_ugm3", 0),
+        "current_co2_ppm": live.get("current_co2_ppm") or 0,
+        "current_aqi": live.get("current_aqi") or 0,
+        "avg_temperature_c": live.get("avg_temperature_c"),
+        "avg_humidity_pct": live.get("avg_humidity_pct"),
+        "avg_wind_speed_kmh": live.get("avg_wind_speed_kmh"),
+        "pm10": live.get("pm10") or 0,
+        "pm2_5": live.get("pm2_5") or 0,
+        "carbon_monoxide_ugm3": live.get("carbon_monoxide_ugm3") or 0,
+        "nitrogen_dioxide_ugm3": live.get("nitrogen_dioxide_ugm3") or 0,
+        "sulphur_dioxide_ugm3": live.get("sulphur_dioxide_ugm3") or 0,
+        "ozone_ugm3": live.get("ozone_ugm3") or 0,
         "source": "live",
         "api_source": live.get("api_source", "Open-Meteo"),
     }

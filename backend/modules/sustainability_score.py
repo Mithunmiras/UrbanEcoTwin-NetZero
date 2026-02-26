@@ -7,22 +7,18 @@ from data.city_data import get_all_zones
 
 
 def _calculate_score(zone):
-    """Calculate sustainability score (0-100) for a zone."""
-    # Weighted scoring based on multiple factors
+    """Calculate sustainability score (0-100) for a zone using only live API data."""
+    # Weighted scoring based on live pollution and weather data only
     co2_score = max(0, min(100, (500 - zone["current_co2_ppm"]) / 2))
     aqi_score = max(0, min(100, (300 - zone["current_aqi"]) / 2))
-    green_score = min(100, zone.get("green_cover_pct", 20.0) * 2.5)
-    renewable_score = min(100, zone.get("renewable_energy_pct", 10.0) * 4)
-    traffic_score = max(0, 100 - zone.get("traffic_index", 70))
-    ev_score = min(100, zone.get("ev_adoption_pct", 3.0) * 15)
+    pm25_score = max(0, min(100, (100 - zone.get("pm2_5", 0)) * 2))
+    pm10_score = max(0, min(100, (200 - zone.get("pm10", 0)) / 2))
 
     total = (
-        co2_score * 0.25 +
-        aqi_score * 0.20 +
-        green_score * 0.20 +
-        renewable_score * 0.15 +
-        traffic_score * 0.10 +
-        ev_score * 0.10
+        co2_score * 0.30 +
+        aqi_score * 0.30 +
+        pm25_score * 0.25 +
+        pm10_score * 0.15
     )
 
     return round(total, 1)
@@ -54,14 +50,12 @@ def get_sustainability_scores():
         score = _calculate_score(zone)
         grade = _get_grade(score)
 
-        # Factor breakdown
+        # Factor breakdown (live API data only)
         breakdown = {
             "air_quality": round(max(0, min(100, (300 - zone["current_aqi"]) / 2)), 1),
             "carbon_emissions": round(max(0, min(100, (500 - zone["current_co2_ppm"]) / 2)), 1),
-            "green_cover": round(min(100, zone.get("green_cover_pct", 20.0) * 2.5), 1),
-            "renewable_energy": round(min(100, zone.get("renewable_energy_pct", 10.0) * 4), 1),
-            "transport": round(max(0, 100 - zone.get("traffic_index", 70)), 1),
-            "ev_adoption": round(min(100, zone.get("ev_adoption_pct", 3.0) * 15), 1),
+            "pm25_quality": round(max(0, min(100, (100 - zone.get("pm2_5", 0)) * 2)), 1),
+            "pm10_quality": round(max(0, min(100, (200 - zone.get("pm10", 0)) / 2)), 1),
         }
 
         scores.append({

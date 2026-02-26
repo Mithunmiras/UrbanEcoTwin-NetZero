@@ -1,5 +1,5 @@
 /**
- * CesiumCityView — Cesium.js 3D globe visualization of Chennai.
+ * CesiumCityView — Cesium.js 3D globe visualization of Tamil Nadu cities.
  *
  * Renders each zone as a color-coded column on a real 3D globe with
  * satellite imagery. Column height ∝ AQI, color = risk level.
@@ -13,9 +13,9 @@ import 'cesium/Build/Cesium/Widgets/widgets.css';
 // ── City Camera Positions ──────────────────────────────────────────
 const CITY_CAMERA = {
     chennai: { lng: 80.20, lat: 13.04, alt: 35000 },
-    mumbai: { lng: 72.86, lat: 19.06, alt: 35000 },
-    delhi: { lng: 77.15, lat: 28.60, alt: 35000 },
-    '': { lng: 78.96, lat: 20.59, alt: 3000000 }, // All India view
+    coimbatore: { lng: 76.96, lat: 11.01, alt: 35000 },
+    madurai: { lng: 78.12, lat: 9.93, alt: 35000 },
+    '': { lng: 78.16, lat: 11.33, alt: 500000 }, // Tamil Nadu view
 };
 
 // ── Risk Colors ────────────────────────────────────────────────────

@@ -1,36 +1,10 @@
 import { useState, useEffect } from 'react';
 import { api } from '../api/client';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
-import { BrainCircuit, Cpu, GitMerge, Activity, Search, Globe2, Landmark, Building2, Waves } from 'lucide-react';
+import { BrainCircuit, Cpu, GitMerge, Activity, Search, Globe2, Landmark, Building2 } from 'lucide-react';
 
-const GatewayOfIndiaIcon = ({ size = 24, color = "currentColor", ...props }) => (
-  <svg
-    width={size}
-    height={size}
-    viewBox="0 0 100 100"
-    fill={color}
-    {...props}
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <rect x="8" y="85" width="84" height="10" />
-    <rect x="12" y="55" width="76" height="5" />
-    <path fillRule="evenodd" clipRule="evenodd" d="M12 60 H35 V85 H12 Z M18 85 H29 V72 Q23.5 56 18 72 Z" />
-    <path fillRule="evenodd" clipRule="evenodd" d="M65 60 H88 V85 H65 Z M71 85 H82 V72 Q76.5 56 71 72 Z" />
-    <path fillRule="evenodd" clipRule="evenodd" d="M35 48 H65 V85 H35 Z M42 85 H58 V70 Q50 50 42 70 Z" />
-    <rect x="35" y="25" width="10" height="23" />
-    <rect x="55" y="25" width="10" height="23" />
-    <rect x="45" y="32" width="10" height="10" />
-    <path d="M 35 25 Q 40 10 45 25 Z" />
-    <path d="M 55 25 Q 60 10 65 25 Z" />
-    <circle cx="40" cy="11" r="2.5" />
-    <circle cx="60" cy="11" r="2.5" />
-    <polygon points="5,50 35,50 35,55 12,55" />
-    <polygon points="65,50 95,50 88,55 65,55" />
-  </svg>
-);
-
-const CITY_LABELS = { chennai: 'Chennai', mumbai: 'Mumbai', delhi: 'Delhi' };
-const CITY_ICONS = { chennai: Landmark, mumbai: GatewayOfIndiaIcon, delhi: Building2 };
+const CITY_LABELS = { chennai: 'Chennai', coimbatore: 'Coimbatore', madurai: 'Madurai' };
+const CITY_ICONS = { chennai: Landmark, coimbatore: Building2, madurai: Building2 };
 
 export default function Optimize() {
   const [selectedCity, setSelectedCity] = useState(null);

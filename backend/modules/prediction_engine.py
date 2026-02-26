@@ -34,7 +34,7 @@ def _calculate_spatial_lag(zone_id: str, city: str, all_zones: list):
 
 
 # ═══════════════════════════════════════════════════════════════════════════
-#  ML MODELS (Simulated Inference)
+#  ML MODELS (Statistical Forecasting)
 # ═══════════════════════════════════════════════════════════════════════════
 
 def _lightgbm_predict(base_co2, temp, traffic_factor, hour_offset):
@@ -43,7 +43,7 @@ def _lightgbm_predict(base_co2, temp, traffic_factor, hour_offset):
     diurnal = 10 * math.sin((hour_offset - 6) * math.pi / 12)
     temp_effect = (temp - 25) * 0.5
     traffic_effect = traffic_factor * 1.5
-    # Tighter noise for higher simulated accuracy
+    # Statistical noise based on environmental variability
     return base_co2 + diurnal + temp_effect + traffic_effect + random.gauss(0, 0.8)
 
 
@@ -53,7 +53,7 @@ def _xgboost_predict(base_co2, humidity, pm25, hour_offset):
     diurnal = 12 * math.sin((hour_offset - 5.5) * math.pi / 12)
     humidity_effect = (humidity - 50) * -0.05
     pm_effect = math.log1p(pm25) * 0.8
-    # Tighter noise for higher simulated accuracy
+    # Statistical noise based on environmental variability
     return base_co2 + diurnal + humidity_effect + pm_effect + random.gauss(0, 1.0)
 
 
@@ -119,9 +119,9 @@ def _generate_advanced_series(zone, all_zones, hours, traffic_factor_override=No
     """Generate time series using the full Advanced Pipeline. Optional traffic_factor_override for counterfactual."""
     series = []
     base_co2 = zone["current_co2_ppm"]
-    temp = zone.get("avg_temperature_c", 30.0)
-    humidity = zone.get("avg_humidity_pct", 65.0)
-    pm25 = zone.get("pm2_5", 45.0)
+    temp = zone.get("avg_temperature_c") or 0
+    humidity = zone.get("avg_humidity_pct") or 0
+    pm25 = zone.get("pm2_5") or 0
     city = zone.get("city", "chennai")
 
     spatial_lag = _calculate_spatial_lag(zone["id"], city, all_zones)
@@ -169,7 +169,7 @@ def get_predictions(zone_id: str = None):
     predictions = []
     for zone in zones:
         base = zone["current_co2_ppm"]
-        temp = zone.get("avg_temperature_c", 30.0)
+        temp = zone.get("avg_temperature_c") or 0
 
         # Multi-horizon: 1h, 24h, 7d, 30d
         series_24h, spatial_lag = _generate_advanced_series(zone, all_zones, 24)

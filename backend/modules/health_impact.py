@@ -96,11 +96,11 @@ def _ml_risk_score(zone):
     weighted_sum = sum(normalized[k] * weights[k] for k in POLLUTANT_KEYS)
 
     # AQI contribution (secondary model)
-    aqi = zone.get("current_aqi", 0)
+    aqi = zone.get("current_aqi") or 0
     aqi_risk = min(aqi / 300, 1.0)
 
     # Temperature stress factor (heat amplifies pollution health effects)
-    temp = zone.get("avg_temperature_c", 30)
+    temp = zone.get("avg_temperature_c") or 0
     heat_factor = max(0, (temp - 28) / 20)  # increases above 28°C
 
     # Ensemble: combine models with learned weights
@@ -230,7 +230,7 @@ def get_health_impact():
             "city": zone.get("city", "unknown"),
             "current_aqi": zone["current_aqi"],
             "current_co2_ppm": zone["current_co2_ppm"],
-            "avg_temperature_c": zone.get("avg_temperature_c", 30.0),
+            "avg_temperature_c": zone.get("avg_temperature_c"),
             "risk_score": risk_score,
             "health_risk": risk_class,
             "condition_predictions": condition_predictions,

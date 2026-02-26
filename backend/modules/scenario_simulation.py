@@ -75,13 +75,13 @@ def _compute_env_modifier(zone, action_info):
     Features: temperature, humidity, wind, AQI, PM2.5, CO₂
     Output: multiplier (0.5 to 2.0) for the action's base impact
     """
-    # Extract live features
-    temp = zone.get("avg_temperature_c", 30.0)
-    humidity = zone.get("avg_humidity_pct", 70)
-    wind = zone.get("avg_wind_speed_kmh", 10.0)
-    aqi = zone.get("current_aqi", 80)
-    pm25 = zone.get("pm2_5", 20.0)
-    co2 = zone.get("current_co2_ppm", 420)
+    # Extract live features (no defaults - use actual API data or 0)
+    temp = zone.get("avg_temperature_c") or 0
+    humidity = zone.get("avg_humidity_pct") or 0
+    wind = zone.get("avg_wind_speed_kmh") or 0
+    aqi = zone.get("current_aqi") or 0
+    pm25 = zone.get("pm2_5") or 0
+    co2 = zone.get("current_co2_ppm") or 0
 
     # Normalize features to 0-1 range
     norm_temp = min(max((temp - 15) / 30, 0), 1)       # 15-45°C range
@@ -141,7 +141,7 @@ def _compute_confidence(zone, action_key, quantity):
     base_confidence -= magnitude_ratio * 20  # up to -20% for max quantity
 
     # AQI variability penalty (high AQI zones have more uncertainty)
-    aqi = zone.get("current_aqi", 80)
+    aqi = zone.get("current_aqi") or 0
     if aqi > 150:
         base_confidence -= 10
     elif aqi > 100:
@@ -192,13 +192,13 @@ def simulate_scenario(zone_id: str, actions: list):
     total_reduction = 0
     action_results = []
 
-    # Live environment summary for the response
+    # Live environment summary for the response (only actual API data)
     env_conditions = {
-        "temperature_c": zone.get("avg_temperature_c", 30.0),
-        "humidity_pct": zone.get("avg_humidity_pct", 70),
-        "wind_speed_kmh": zone.get("avg_wind_speed_kmh", 10.0),
-        "current_aqi": zone.get("current_aqi", 80),
-        "pm2_5": zone.get("pm2_5", 20.0),
+        "temperature_c": zone.get("avg_temperature_c"),
+        "humidity_pct": zone.get("avg_humidity_pct"),
+        "wind_speed_kmh": zone.get("avg_wind_speed_kmh"),
+        "current_aqi": zone.get("current_aqi"),
+        "pm2_5": zone.get("pm2_5"),
         "current_co2_ppm": base_co2,
         "api_source": zone.get("api_source", "Open-Meteo"),
     }
@@ -267,8 +267,8 @@ def simulate_scenario(zone_id: str, actions: list):
 
 def _explain_modifier(modifier, zone, impact_info):
     """Generate human-readable explanation of why the modifier increased/decreased impact."""
-    temp = zone.get("avg_temperature_c", 30.0)
-    humidity = zone.get("avg_humidity_pct", 70)
+    temp = zone.get("avg_temperature_c") or 0
+    humidity = zone.get("avg_humidity_pct") or 0
 
     if modifier > 1.1:
         reasons = []

@@ -180,8 +180,8 @@ def optimize_with_budget(budget_inr: float):
     for r in zone_results:
         zid = r["zone_id"]
         z = zone_lookup.get(zid, {})
-        co2 = float(z.get("current_co2_ppm", r.get("current_co2_ppm", 420)))
-        aqi = float(z.get("current_aqi", 100))
+        co2 = float(z.get("current_co2_ppm", r.get("current_co2_ppm", 0)))
+        aqi = float(z.get("current_aqi") or 0)
 
         if _is_low_need(co2, aqi):
             not_required.append({
@@ -218,7 +218,7 @@ def optimize_with_budget(budget_inr: float):
         need_score = r["need_score"]
         share = (need_score / total_need) * budget_inr
         cap = min(share, remaining)
-        zone_data = zone_by_id.get(r["zone_id"], {"current_co2_ppm": r["current_co2_ppm"], "current_aqi": r.get("current_aqi", 100)})
+        zone_data = zone_by_id.get(r["zone_id"], {"current_co2_ppm": r["current_co2_ppm"], "current_aqi": r.get("current_aqi") or 0})
         all_strats = _get_all_strategies_for_budget(zone_data)
         strategies = [s for s in all_strats if s.get("estimated_cost_inr", 0) <= cap]
         if strategies:
