@@ -12,7 +12,6 @@ import Optimize from './pages/Optimize';
 import NetZero from './pages/NetZero';
 import Scores from './pages/Scores';
 import CarbonCredits from './pages/CarbonCredits';
-import BudgetConstraint from './pages/BudgetConstraint';
 import Health from './pages/Health';
 import Reports from './pages/Reports';
 import Alerts from './pages/Alerts';
@@ -52,7 +51,6 @@ function ProtectedRoutes() {
           <Route path="/netzero" element={<NetZero />} />
           <Route path="/scores" element={<Scores />} />
           <Route path="/carbon-credits" element={<CarbonCredits />} />
-          <Route path="/budget-constraint" element={<BudgetConstraint />} />
           <Route path="/health" element={<Health />} />
           <Route path="/reports" element={<Reports />} />
           <Route path="/alerts" element={<Alerts />} />
