@@ -11,15 +11,20 @@ export default function Predictions() {
   const { selectedState, stateName } = useStateContext();
   const [selectedZone, setSelectedZone] = useState(null);
   const [data, setData] = useState(null);
+  const [optimizeData, setOptimizeData] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setLoading(true);
     setSelectedZone(null);
-    api.getPredictions(undefined, selectedState).then(d => {
-      setData(d);
-      if (d.predictions?.length > 0) {
-        setSelectedZone(d.predictions[0].zone_id);
+    Promise.all([
+      api.getPredictions(undefined, selectedState),
+      api.getOptimize(undefined, undefined, selectedState)
+    ]).then(([predRes, optRes]) => {
+      setData(predRes);
+      setOptimizeData(optRes);
+      if (predRes.predictions?.length > 0) {
+        setSelectedZone(predRes.predictions[0].zone_id);
       }
       setLoading(false);
     }).catch(() => setLoading(false));
@@ -27,6 +32,7 @@ export default function Predictions() {
 
   const predictions = data?.predictions || [];
   const current = selectedZone ? predictions.find(p => p.zone_id === selectedZone) : null;
+  const currentOpt = optimizeData?.optimization_results?.find(o => o.zone_id === selectedZone);
 
   if (loading) return <div className="loading"><div className="loading-spinner"></div><p>Loading predictions for {stateName}...</p></div>;
   if (!data || predictions.length === 0) return <div className="loading"><p>No prediction data available.</p></div>;
@@ -188,6 +194,51 @@ export default function Predictions() {
                   </ResponsiveContainer>
                 </div>
               </div>
+
+              {/* RL Optimizer Strategy for Active Zone */}
+              {currentOpt && (
+                <div className="card" style={{ marginTop: 24 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+                    <div>
+                      <h3 style={{ fontSize: 18, display: 'flex', alignItems: 'center', gap: 8, margin: 0 }}>
+                        <Cpu size={20} color="#22c55e" /> Recommended RL Policy for {current.zone_name}
+                      </h3>
+                      <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>
+                        RL iterations: {currentOpt.rl_iterations} • Convergence: {currentOpt.convergence_score}
+                      </span>
+                    </div>
+                    <span style={{ padding: '6px 12px', fontSize: 12, fontWeight: 600, background: 'rgba(34,197,94,0.1)', color: '#22c55e', border: '1px solid rgba(34,197,94,0.2)', borderRadius: 20 }}>
+                      Best: {currentOpt.best_strategy?.strategy_name}
+                    </span>
+                  </div>
+
+                  <ResponsiveContainer width="100%" height={200}>
+                    <BarChart data={currentOpt.all_strategies} layout="vertical">
+                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.05)" />
+                      <XAxis type="number" stroke="#64748b" fontSize={12} />
+                      <YAxis type="category" dataKey="strategy_name" stroke="#64748b" fontSize={11} width={160} />
+                      <Tooltip contentStyle={{ background: '#ffffff', border: '1px solid rgba(0,0,0,0.1)', borderRadius: 10, color: '#0f172a' }} />
+                      <Bar dataKey="reduction_pct" radius={[0, 6, 6, 0]}>
+                        {currentOpt.all_strategies?.map((s, i) => (
+                          <Cell key={i} fill={i === 0 ? '#22c55e' : '#3b82f6'} fillOpacity={i === 0 ? 1 : 0.5} />
+                        ))}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+
+                  <div style={{ marginTop: 12, padding: 16, background: 'rgba(34,197,94,0.05)', borderRadius: 'var(--radius-sm)', border: '1px solid rgba(34,197,94,0.15)' }}>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--accent-green)', marginBottom: 4 }}>
+                      🏆 Best Strategy: {currentOpt.best_strategy?.strategy_name}
+                    </div>
+                    <div style={{ fontSize: 13, color: '#0f172a', fontWeight: 500, marginBottom: 4 }}>
+                      Action Plan: {currentOpt.best_strategy?.description}
+                    </div>
+                    <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
+                      Reduction: {currentOpt.best_strategy?.reduction_pct}% • Cost: ₹{currentOpt.best_strategy?.estimated_cost_inr?.toLocaleString()} • Efficiency: {currentOpt.best_strategy?.efficiency_score}
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--text-muted)' }}>

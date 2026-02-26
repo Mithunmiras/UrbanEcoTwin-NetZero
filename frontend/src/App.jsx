@@ -8,9 +8,9 @@ import Dashboard from './pages/Dashboard';
 import DigitalTwin from './pages/DigitalTwin';
 import Predictions from './pages/Predictions';
 import Simulation from './pages/Simulation';
-import Optimize from './pages/Optimize';
 import NetZero from './pages/NetZero';
 import Scores from './pages/Scores';
+import CarbonCredits from './pages/CarbonCredits';
 import Health from './pages/Health';
 import Reports from './pages/Reports';
 import Alerts from './pages/Alerts';
@@ -46,9 +46,9 @@ function ProtectedRoutes() {
           <Route path="/digital-twin" element={<DigitalTwin />} />
           <Route path="/predictions" element={<Predictions />} />
           <Route path="/simulation" element={<Simulation />} />
-          <Route path="/optimize" element={<Optimize />} />
           <Route path="/netzero" element={<NetZero />} />
           <Route path="/scores" element={<Scores />} />
+          <Route path="/carbon-credits" element={<CarbonCredits />} />
           <Route path="/health" element={<Health />} />
           <Route path="/reports" element={<Reports />} />
           <Route path="/alerts" element={<Alerts />} />
