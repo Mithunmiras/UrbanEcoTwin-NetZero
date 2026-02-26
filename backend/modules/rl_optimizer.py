@@ -97,31 +97,32 @@ def _evaluate_strategy(zone_context, strategy_name, actions):
     # Contextual Policy Alignment
     policy_alignment_score = 0.5
     if strategy_name == "Green Revolution" and green_cover_index < 0.4:
-        policy_alignment_score = 1.5
-    elif strategy_name == "Solar Transition" and industrial_index > 0.6:
-        policy_alignment_score = 1.8
-    elif strategy_name == "Traffic & Industry Reform" and zone_context["aqi_current"] > 150:
-        policy_alignment_score = 1.5
-    elif strategy_name == "Balanced Sustainability" and cost <= 0.3 * budget_total:
-        policy_alignment_score = 1.2
-    elif strategy_name == "Maximum Impact" and (base_co2 > 480 or zone_context["aqi_current"] > 200):
         policy_alignment_score = 2.0
+    elif strategy_name == "Solar Transition" and industrial_index > 0.6:
+        policy_alignment_score = 2.5
+    elif strategy_name == "Traffic & Industry Reform" and traffic_density > 0.7:
+        policy_alignment_score = 2.5
+    elif strategy_name == "Balanced Sustainability" and cost <= 0.2 * budget_total:
+        policy_alignment_score = 1.5
+    elif strategy_name == "Maximum Impact" and (base_co2 > 480 or zone_context["aqi_current"] > 200):
+        policy_alignment_score = 1.2
 
     normalized_cost = min(cost / max(budget_total, 1), 1.0)
     budget_violation_penalty = max(0, (cost - budget_total) / max(budget_total, 1))
 
+    # Weighting explicitly pushes the model to respect cost and policy alignment heavily for varied distribution
     reward = (
-        (0.35 * normalized_co2_reduction) +
-        (0.25 * normalized_health_improvement) +
-        (0.15 * sustainability_score_gain) +
-        (0.10 * policy_alignment_score) -
-        (0.20 * normalized_cost) -
-        (0.10 * budget_violation_penalty)
+        (0.25 * normalized_co2_reduction) +
+        (0.20 * normalized_health_improvement) +
+        (0.10 * sustainability_score_gain) +
+        (0.35 * policy_alignment_score) -
+        (0.40 * normalized_cost) -
+        (0.20 * budget_violation_penalty)
     )
 
     # Penalties
-    if cost > 0.4 * budget_total and zone_context["aqi_current"] <= 150 and base_co2 <= 480:
-        reward -= 0.15 # Heavy budget penalty
+    if cost > 0.25 * budget_total and zone_context["aqi_current"] <= 120 and base_co2 <= 460:
+        reward -= 0.5 # Huge penalty for spending wildly on safe zones
         
     # Simulated repetition penalty
     history_hash = int(hashlib.md5(zone_context["id"].encode()).hexdigest(), 16) % 5
