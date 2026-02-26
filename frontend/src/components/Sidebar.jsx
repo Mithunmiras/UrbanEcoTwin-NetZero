@@ -15,8 +15,7 @@ const navItems = [
   { to: '/simulation', icon: <FlaskConical size={18} />, label: 'Simulation' },
   { to: '/optimize', icon: <Cpu size={18} />, label: 'RL Optimizer' },
   { to: '/netzero', icon: <Target size={18} />, label: 'Net-Zero Plan' },
-  { to: '/scores', icon: <Star size={18} />, label: 'Sustainability' },
-  { to: '/carbon-credits', icon: <Coins size={18} />, label: 'Carbon Credits' },
+  { to: '/scores', icon: <Star size={18} />, label: 'Sustainability & Credits' },
   { to: '/health', icon: <HeartPulse size={18} />, label: 'Health Impact' },
   { to: '/reports', icon: <FileText size={18} />, label: 'Policy & Budget' },
 ];
