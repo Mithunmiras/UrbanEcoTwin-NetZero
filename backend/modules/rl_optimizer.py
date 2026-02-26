@@ -9,7 +9,7 @@ from data.city_data import get_all_zones
 
 import hashlib
 
-def _get_zone_context(zone, budget_remaining=50000000):
+def _get_zone_context(zone, budget_remaining=2500000000):
     """Generate deterministic state context based on zone attributes."""
     zid = zone.get("id", "unknown_zone")
     h = int(hashlib.md5(zid.encode()).hexdigest(), 16)
@@ -20,7 +20,7 @@ def _get_zone_context(zone, budget_remaining=50000000):
     traffic_density = ((h // 10000) % 100) / 100.0
     
     co2_current = zone.get("current_co2_ppm", 420.0)
-    aqi_current = zone.get("current_aqi", 100.0)
+    aqi_current = float(zone.get("current_aqi", 100.0))
     
     return {
         "id": zid,
@@ -32,7 +32,7 @@ def _get_zone_context(zone, budget_remaining=50000000):
         "green_cover_index": green_cover_index,
         "industrial_index": industrial_index,
         "traffic_density": traffic_density,
-        "budget_remaining": budget_remaining
+        "budget_remaining": float(budget_remaining)
     }
 
 def _evaluate_strategy(zone_context, strategy_name, actions):
@@ -40,6 +40,7 @@ def _evaluate_strategy(zone_context, strategy_name, actions):
     base_co2 = zone_context["co2_current"]
     industrial_index = zone_context["industrial_index"]
     green_cover_index = zone_context["green_cover_index"]
+    traffic_density = zone_context["traffic_density"]
     budget_total = zone_context["budget_remaining"]
 
     total_reduction = 0
@@ -49,13 +50,17 @@ def _evaluate_strategy(zone_context, strategy_name, actions):
         
         # Action Context Modifiers
         if industrial_index > 0.6:
-            if action["type"] == "solar_panels": multiplier *= 1.4
-            elif action["type"] in ["traffic_control", "factory_regulation"]: multiplier *= 1.2
-            elif action["type"] in ["tree_planting", "green_cover"]: multiplier *= 0.8
+            if action["type"] == "solar_panels": multiplier *= 2.0
+            elif action["type"] in ["traffic_control", "factory_regulation"]: multiplier *= 1.5
+            elif action["type"] in ["tree_planting", "green_cover"]: multiplier *= 0.5
             
         if green_cover_index < 0.4:
-            if action["type"] in ["tree_planting", "green_cover"]: multiplier *= 1.5
-            elif action["type"] == "solar_panels": multiplier *= 0.9
+            if action["type"] in ["tree_planting", "green_cover"]: multiplier *= 1.8
+            elif action["type"] == "solar_panels": multiplier *= 0.8
+            
+        if traffic_density > 0.7:
+            if action["type"] in ["traffic_control", "ev_transition"]: multiplier *= 2.0
+            elif action["type"] == "factory_regulation": multiplier *= 0.7
 
         # Apply Base Reductions
         if action["type"] == "tree_planting":
@@ -77,22 +82,30 @@ def _evaluate_strategy(zone_context, strategy_name, actions):
     efficiency = reduction_pct / (cost / 1000000) if cost > 0 else 0
 
     # ── Multi-Objective Reward Calculation ──
-    normalized_co2_reduction = min(reduction_pct / 30.0, 1.0) # Assume 30% reduction is excellent
-    normalized_health_improvement = min((reduction_pct * 0.8) / 25.0, 1.0)
-    sustainability_score_gain = min(reduction_pct * 0.5 / 10.0, 1.0)
+    # Soft limits using diminishing returns (square root) instead of hard caps to reward massive interventions
+    import math
+    
+    co2_ratio = reduction_pct / 30.0
+    normalized_co2_reduction = math.sqrt(co2_ratio) if co2_ratio > 1.0 else co2_ratio
+    
+    health_ratio = (reduction_pct * 0.8) / 25.0
+    normalized_health_improvement = math.sqrt(health_ratio) if health_ratio > 1.0 else health_ratio
+    
+    sust_gain = (reduction_pct * 0.5) / 10.0
+    sustainability_score_gain = math.sqrt(sust_gain) if sust_gain > 1.0 else sust_gain
     
     # Contextual Policy Alignment
     policy_alignment_score = 0.5
     if strategy_name == "Green Revolution" and green_cover_index < 0.4:
-        policy_alignment_score = 1.0
+        policy_alignment_score = 1.5
     elif strategy_name == "Solar Transition" and industrial_index > 0.6:
-        policy_alignment_score = 1.0
+        policy_alignment_score = 1.8
     elif strategy_name == "Traffic & Industry Reform" and zone_context["aqi_current"] > 150:
-        policy_alignment_score = 1.0
+        policy_alignment_score = 1.5
     elif strategy_name == "Balanced Sustainability" and cost <= 0.3 * budget_total:
-        policy_alignment_score = 1.0
+        policy_alignment_score = 1.2
     elif strategy_name == "Maximum Impact" and (base_co2 > 480 or zone_context["aqi_current"] > 200):
-        policy_alignment_score = 1.0
+        policy_alignment_score = 2.0
 
     normalized_cost = min(cost / max(budget_total, 1), 1.0)
     budget_violation_penalty = max(0, (cost - budget_total) / max(budget_total, 1))
@@ -107,7 +120,7 @@ def _evaluate_strategy(zone_context, strategy_name, actions):
     )
 
     # Penalties
-    if cost > 0.4 * budget_total:
+    if cost > 0.4 * budget_total and zone_context["aqi_current"] <= 150 and base_co2 <= 480:
         reward -= 0.15 # Heavy budget penalty
         
     # Simulated repetition penalty
