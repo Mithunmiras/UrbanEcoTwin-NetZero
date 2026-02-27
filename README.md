@@ -25,9 +25,10 @@ UrbanEcoTwin-NetZero addresses critical urban sustainability challenges by combi
 - 🏛️ **4 States, 109 Districts** — Full coverage of **Tamil Nadu** (38), **Kerala** (14), **Karnataka** (31), and **Andhra Pradesh** (26)
 - 🔐 **Admin Authentication** — Secure login with SHA-256 hashing and session management
 - 🗺️ **State Selection** — Choose a state to view all its districts' environmental data
-- 🤖 **Machine Learning** — LSTM, XGBoost, Logistic Regression, and Weighted Ensemble models
-- 🧬 **Reinforcement Learning** — DQN-based strategy optimization
-- 🤝 **Multi-Agent System** — 4 autonomous AI agents working collaboratively
+- 🤖 **Machine Learning** — LightGBM, XGBoost, Stacking Ensemble, Ridge Regression, Logistic Regression, and Weighted Ensemble models
+- 🧬 **Reinforcement Learning** — DQN-based strategy optimization and RL policy layer for emission shaping
+- 🔍 **Explainable AI** — SHAP values for feature importance and counterfactual "what-if" simulation
+- 🤝 **Multi-Agent System** — 4 autonomous AI agents with Isolation Forest anomaly detection and DBSCAN spatial clustering
 - 📊 **Sustainability Intelligence** — Net-Zero roadmap, carbon credit economics, and sustainability scoring
 
 ## 🎯 Core Problem
@@ -49,15 +50,15 @@ Cities currently:
               ↓
     Urban Digital Twin         ← 3D Cesium.js globe with 4 South Indian states
               ↓
-    AI Prediction Engine       ← LSTM + XGBoost CO₂ forecasts (1h, 24h, 7-day)
+    AI Prediction Engine       ← LightGBM + XGBoost + Stacking Ensemble CO₂ forecasts (1h, 24h, 7d, 30d)
               ↓
     ML Health Impact Predictor ← Logistic Regression + WHO compliance
               ↓
-    Scenario Simulation Engine ← Test: trees, solar, EVs, factories
+    Scenario Simulation Engine ← Ridge Regression ML + exponential decay timeline
               ↓
-    RL Optimizer (DQN)         ← Finds optimal sustainability strategy
+    RL Optimizer (DQN)         ← Finds optimal sustainability strategy with budget constraints
               ↓
-    Multi-Agent AI Layer       ← 4 autonomous agents collaborate
+    Multi-Agent AI Layer       ← 4 autonomous agents (Isolation Forest + DBSCAN + SHAP + Policy)
               ↓
     Net-Zero Planning Engine   ← Phase-wise roadmap to carbon neutrality
               ↓
@@ -97,12 +98,18 @@ After login, a **State Selection** page lets you choose which state to monitor. 
 
 | Model | Purpose | Inputs |
 |-------|---------|--------|
+| **LightGBM** | Primary CO₂ forecasting model | CO₂, Temperature, Traffic factor, Time |
+| **XGBoost** | Secondary CO₂ forecasting model | CO₂, Humidity, PM2.5, Time |
+| **Stacking Ensemble (Ridge/MLP)** | Meta-learner combining base models | LightGBM + XGBoost outputs + Spatial Lag |
+| **Spatial Lag Features** | Neighbor zone influence calculation | Neighboring zone CO₂/AQI values |
+| **RL Policy Layer (DQN)** | Dynamic emission shaping via interventions | Stacked prediction, Risk level, Peak hour |
+| **Ridge Regression** | Environmental impact modifier for simulations | Temperature, Humidity, Wind, AQI, PM2.5, CO₂ |
 | **Weighted Ensemble** | Overall health risk score (0-100) | PM2.5, PM10, NO₂, O₃, SO₂, CO, AQI, Temperature |
-| **Logistic Regression** | Per-condition probability prediction | 6 pollutants → 6 health conditions |
+| **Logistic Regression** | Per-condition health probability prediction | 6 pollutants → 6 health conditions |
 | **WHO Guideline Checker** | Compliance assessment | Live values vs WHO 2021 safe limits |
-| **LSTM (simulated)** | CO₂ time-series forecasting | Historical + current CO₂ |
-| **XGBoost (simulated)** | Short-term AQI prediction | Multi-pollutant features |
-| **Deep Q-Network** | Optimal sustainability strategy | Zone state → best actions |
+| **SHAP Explainability** | Feature importance attribution | Spatial Lag, Temperature, Time of Day |
+| **Isolation Forest** | Anomaly detection in monitoring agent | Multi-zone pollutant readings |
+| **DBSCAN Clustering** | Geo-spatial pollution hotspot detection | Zone coordinates + pollutant levels |
 
 ## 🌐 Complete Module Breakdown
 
@@ -110,14 +117,14 @@ After login, a **State Selection** page lets you choose which state to monitor. 
 |---|--------|-------------|
 | 1 | **Urban Digital Twin** | 3D Cesium.js globe — 109 districts, 4 states, satellite imagery, district dropdown |
 | 2 | **Data Fusion Engine** | Merges live pollution, weather data from dual APIs |
-| 3 | **AI Prediction Engine** | LSTM/XGBoost CO₂ predictions — 1h, 24h, 7-day |
-| 4 | **Scenario Simulation** | Simulate: plant trees, add solar, increase traffic, add factory |
-| 5 | **RL Optimizer** | Deep Q-Network finds best sustainability strategy per zone |
-| 6 | **Multi-Agent AI** | 4 autonomous agents: Monitoring, Prediction, Optimization, Policy |
+| 3 | **AI Prediction Engine** | LightGBM + XGBoost + Stacking Ensemble CO₂ predictions — 1h, 24h, 7-day, 30-day with SHAP explainability |
+| 4 | **Scenario Simulation** | Ridge Regression ML — simulate: plant trees, add solar, EVs, green cover, traffic, factories with environmental modifiers |
+| 5 | **RL Optimizer** | Strategy evaluation with budget-constrained need-based allocation per zone |
+| 6 | **Multi-Agent AI** | 4 autonomous agents: Monitoring (Isolation Forest + DBSCAN), Prediction (SHAP + Counterfactual), Optimization (Pareto + Carbon Credits), Policy (UN SDG + CPCB) |
 | 7 | **Net-Zero Planner** | Year-by-year roadmap with 4 phases to Net-Zero |
 | 8 | **Sustainability & Carbon Credits** | Multi-factor 0-100 scoring per zone with grades + carbon credit economics |
-| 9 | **Health Impact Predictor** | ML-powered: Logistic Regression + WHO compliance |
-| 10 | **Policy Report Generator** | Government-ready comprehensive report |
+| 9 | **Health Impact Predictor** | ML-powered: Logistic Regression + Weighted Ensemble + WHO compliance |
+| 10 | **Policy Report Generator** | Government-ready comprehensive report with budget allocation |
 | 11 | **Alert System** | Multi-level threshold alerts (Critical / Warning / Info) |
 
 ## 🖥️ Dashboard Features
@@ -128,21 +135,24 @@ After login, a **State Selection** page lets you choose which state to monitor. 
 | 🗺️ **State Selector** | Choose Tamil Nadu, Kerala, Karnataka, or Andhra Pradesh |
 | 📊 **Overview Dashboard** | Key metrics, CO₂ charts, risk distribution, live alerts |
 | 🌍 **3D Digital Twin** | Cesium.js globe with satellite imagery, district dropdown, zone selection |
-| 📈 **Prediction Charts** | Area/line charts for hourly and weekly CO₂ forecasts |
-| 🎛️ **Scenario Simulator** | Interactive sliders to test sustainability actions |
+| 📈 **Advanced Predictions** | Multi-horizon (1h/24h/7d/30d) CO₂ forecasts with SHAP values and confidence intervals |
+| 🎛️ **Scenario Simulator** | Interactive actions with ML-adjusted environmental modifiers and timelines |
 | 📅 **Net-Zero Timeline** | Phase-wise roadmap with progress indicators |
 | ❤️ **Health Dashboard** | ML risk scores, condition probabilities, WHO compliance |
 | 🕸️ **Sustainability & Credits** | Radar charts, carbon credit pie charts, zone-wise breakdown |
+| 📋 **Policy & Budget** | Government-ready reports with budget allocation strategies |
 
 ## 🧰 Technology Stack
 
 | Layer | Technology |
-|-------|-----------|
-| **Frontend** | React 18, Vite, Recharts, Cesium.js, React Router |
+|-------|-----------| 
+| **Frontend** | React 18, Vite 6, Recharts, Cesium.js, React Router, Lucide Icons |
 | **3D Globe** | Cesium.js with Cesium Ion (satellite imagery + 3D terrain) |
 | **Backend** | Python 3.10+, FastAPI, Uvicorn |
-| **Live Data** | Open-Meteo API, OpenWeatherMap API (dual fallback) |
-| **AI/ML** | NumPy, Logistic Regression, Weighted Ensemble, DQN |
+| **Live Data** | Open-Meteo API, OpenWeatherMap API (dual fallback with 5-min cache) |
+| **AI/ML** | NumPy, Pandas, Scikit-learn, LightGBM, XGBoost, Ridge Regression, Logistic Regression, Isolation Forest, DBSCAN |
+| **RL** | DQN Policy Layer, Strategy Evaluation, Budget-Constrained Optimization |
+| **Explainability** | SHAP Values, Counterfactual "What-If" Analysis |
 | **Auth** | SHA-256 hashing, localStorage tokens, React Context |
 | **Visualization** | Recharts (Bar, Line, Area, Pie, Radar), Cesium.js 3D Globe |
 
@@ -155,7 +165,7 @@ After login, a **State Selection** page lets you choose which state to monitor. 
 
 ### API Keys Needed
 | API | Required? | Get it at |
-|-----|-----------|-----------|
+|-----|-----------|-----------| 
 | **Open-Meteo** | ❌ No key needed | — |
 | **OpenWeatherMap** | ✅ Free key | [openweathermap.org/api](https://openweathermap.org/api) |
 | **Cesium Ion** | ✅ Free key | [ion.cesium.com/signup](https://ion.cesium.com/signup) |
@@ -191,15 +201,17 @@ All data endpoints accept an optional `?state=` query parameter (`tamilnadu`, `k
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
+| POST | `/api/auth/login` | Admin authentication |
+| POST | `/api/auth/logout` | Logout |
 | GET | `/api/states` | List available states |
 | GET | `/api/cities?state=` | List districts for a state |
 | GET | `/api/zones?state=` | Digital twin zone data |
 | GET | `/api/data-fusion?state=` | Unified environmental data |
-| GET | `/api/predictions?state=` | AI CO₂ predictions |
+| GET | `/api/predictions?state=` | AI CO₂ predictions (1h/24h/7d/30d) |
+| GET | `/api/predictions/counterfactual?zone_id=&traffic_reduction_pct=` | Counterfactual "what-if" simulation |
 | POST | `/api/simulate` | Run scenario simulation |
 | GET | `/api/simulate/actions` | Available simulation actions |
-| GET | `/api/optimize?state=` | RL optimizer results |
-| GET | `/api/agents` | Multi-agent system analysis |
+| GET | `/api/optimize?state=&budget_inr=` | RL optimizer results with optional budget constraint |
 | GET | `/api/netzero?state=` | Net-Zero roadmap |
 | GET | `/api/scores?state=` | Sustainability scores |
 | GET | `/api/carbon-credits?state=` | Carbon credit calculations |
@@ -220,14 +232,14 @@ UrbanEcoTwin-NetZero/
 │   ├── modules/
 │   │   ├── digital_twin.py        # Urban Digital Twin
 │   │   ├── data_fusion.py         # Data Fusion Engine
-│   │   ├── prediction_engine.py   # AI Prediction Engine
-│   │   ├── scenario_simulation.py # Scenario Simulator
-│   │   ├── rl_optimizer.py        # RL Optimizer (DQN)
-│   │   ├── multi_agent.py         # Multi-Agent AI System
+│   │   ├── prediction_engine.py   # AI Prediction Engine (LightGBM + XGBoost + Stacking + SHAP)
+│   │   ├── scenario_simulation.py # ML Scenario Simulator (Ridge Regression)
+│   │   ├── rl_optimizer.py        # RL Optimizer with budget constraints
+│   │   ├── multi_agent.py         # Multi-Agent AI System (Isolation Forest + DBSCAN)
 │   │   ├── netzero_planner.py     # Net-Zero Planning
 │   │   ├── sustainability_score.py# Sustainability Scoring
 │   │   ├── carbon_credits.py      # Carbon Credit Calculator
-│   │   ├── health_impact.py       # ML Health Impact Predictor
+│   │   ├── health_impact.py       # ML Health Impact Predictor (Logistic Regression)
 │   │   ├── policy_report.py       # Policy Report Generator
 │   │   └── alerts.py              # Alert System
 │   └── routers/
@@ -244,19 +256,19 @@ UrbanEcoTwin-NetZero/
 │   │   │   └── StateContext.jsx    # State selection context
 │   │   ├── components/
 │   │   │   ├── Sidebar.jsx        # Navigation sidebar with state indicator
-│   │   │   └── CesiumCityView.jsx # 3D globe component (4-state cameras)
+│   │   │   ├── CesiumCityView.jsx # 3D globe component (4-state cameras)
+│   │   │   └── CityScene3D.jsx    # 3D city scene component
 │   │   └── pages/
 │   │       ├── Login.jsx          # Admin login page
 │   │       ├── StateSelector.jsx  # State selection screen
 │   │       ├── Dashboard.jsx      # Overview dashboard
 │   │       ├── DigitalTwin.jsx    # 3D Cesium globe + district dropdown
-│   │       ├── Predictions.jsx    # AI predictions (state-filtered)
-│   │       ├── Simulation.jsx     # Scenario simulator
-│   │       ├── Optimize.jsx       # RL optimizer
+│   │       ├── Predictions.jsx    # Advanced ML predictions with SHAP
+│   │       ├── Simulation.jsx     # ML scenario simulator
 │   │       ├── NetZero.jsx        # Net-Zero roadmap
 │   │       ├── Scores.jsx         # Sustainability + Carbon Credits
 │   │       ├── Health.jsx         # ML health impact
-│   │       ├── Reports.jsx        # Policy reports
+│   │       ├── Reports.jsx        # Policy & budget reports
 │   │       └── Alerts.jsx         # Alert system
 │   ├── vite.config.js             # Vite + Cesium plugin
 │   └── package.json
@@ -269,9 +281,10 @@ UrbanEcoTwin-NetZero/
 - ✅ Real-time environmental intelligence across 4 South Indian states (109 districts)
 - ✅ ML-powered health risk assessment with WHO compliance
 - ✅ Data-driven Net-Zero planning with carbon credit economics
-- ✅ Smart city decision support with scenario simulation
+- ✅ Smart city decision support with ML-enhanced scenario simulation
 - ✅ Health-aware environmental policy generation
 - ✅ State-level comparative analysis and sustainability scoring
+- ✅ Explainable AI with SHAP values for transparent decision-making
 
 ## 🏆 Innovation Highlights
 
@@ -280,10 +293,12 @@ UrbanEcoTwin-NetZero/
 | 3D Cesium Globe Digital Twin | ⭐⭐⭐⭐⭐ Very High |
 | Live Dual-API Data Pipeline | ⭐⭐⭐⭐⭐ Very High |
 | 4-State Multi-Region Coverage (109 districts) | ⭐⭐⭐⭐⭐ Very High |
-| ML Health Impact (Logistic Regression) | ⭐⭐⭐⭐⭐ Very High |
-| AI Prediction (LSTM + XGBoost) | ⭐⭐⭐⭐ High |
-| Reinforcement Learning Optimizer | ⭐⭐⭐⭐⭐ Very High |
-| Multi-Agent AI System | ⭐⭐⭐⭐⭐ Very High |
+| ML Health Impact (Logistic Regression + Weighted Ensemble) | ⭐⭐⭐⭐⭐ Very High |
+| AI Prediction (LightGBM + XGBoost + Stacking Ensemble) | ⭐⭐⭐⭐⭐ Very High |
+| SHAP Explainability + Counterfactual Analysis | ⭐⭐⭐⭐⭐ Very High |
+| Reinforcement Learning Optimizer with Budget Constraints | ⭐⭐⭐⭐⭐ Very High |
+| Multi-Agent AI (Isolation Forest + DBSCAN + Pareto + SDG) | ⭐⭐⭐⭐⭐ Very High |
+| ML Scenario Simulation (Ridge Regression + Env Modifiers) | ⭐⭐⭐⭐⭐ Very High |
 | Net-Zero Roadmap + Carbon Credits | ⭐⭐⭐⭐⭐ Extremely High |
 | Secure Admin Authentication | ⭐⭐⭐⭐ High |
 | State Selection + Filtering | ⭐⭐⭐⭐ High |
